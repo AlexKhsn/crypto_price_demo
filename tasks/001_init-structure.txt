@@ -1,0 +1,7 @@
+- create basic structure for spring-boot project with
+    - kotlin
+    - gradle
+    - docker
+    - postgresql
+    - rest api
+    - spring data jpa
