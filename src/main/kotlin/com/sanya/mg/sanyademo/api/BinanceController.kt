@@ -1,6 +1,7 @@
 package com.sanya.mg.sanyademo.api
 
 import com.sanya.mg.sanyademo.service.BinanceService
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -15,9 +16,9 @@ class BinanceController(
     fun getPrice(
         @PathVariable baseTicker: String,
         @PathVariable quoteTicker: String,
-    ): String {
+    ): ResponseEntity<String> {
         val price = binanceService.getPrice(baseTicker, quoteTicker)
         println("$baseTicker-$quoteTicker price: $price")
-        return price
+        return ResponseEntity.ok().body(price)
     }
 }
