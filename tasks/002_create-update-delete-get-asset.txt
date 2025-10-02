@@ -17,6 +17,7 @@
   - quoteTicker: String
   - quantity: BigDecimal
 - `AssetUpdateRequest` - для обновления актива
+    тут уебанство!
   - quantity: BigDecimal
 - `AssetResponse` - для возврата данных об активе
   - id: Long
