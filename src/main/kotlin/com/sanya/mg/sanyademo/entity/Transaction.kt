@@ -1,0 +1,28 @@
+package com.sanya.mg.sanyademo.entity
+
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.Table
+import java.math.BigDecimal
+import java.time.LocalDate
+
+@Entity
+@Table(name = "transactions")
+data class Transaction(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long? = null,
+    @Column(nullable = false)
+    val type: String,
+    @Column(nullable = false)
+    val symbol: String,
+    @Column(nullable = false)
+    val quantity: BigDecimal,
+    @Column(nullable = false)
+    val price: BigDecimal,
+    @Column(nullable = false)
+    val date: LocalDate = LocalDate.now(),
+)
