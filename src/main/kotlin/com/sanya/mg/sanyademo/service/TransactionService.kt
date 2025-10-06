@@ -23,13 +23,7 @@ class TransactionService(
         )
 
         val saved = transactionRepository.save(forSave)
-        return TransactionDto(
-            id = saved.id!!,
-            saved.type,
-            saved.symbol,
-            saved.quantity,
-            saved.date,
-        )
+        return TransactionDto.fromEntity(saved)
     }
 
     fun getAllTransactions(): List<TransactionDto> {
@@ -47,51 +41,27 @@ class TransactionService(
 
     fun getById(id: Long): TransactionDto {
         val transaction = transactionRepository.findById(id).get()
-        return TransactionDto(
-            transaction.id!!,
-            transaction.type,
-            transaction.symbol,
-            transaction.quantity,
-            transaction.date,
-        )
+        return TransactionDto.fromEntity(transaction)
     }
 
     fun getAllByType(type: TransactionType): List<TransactionDto> {
         val filtered = transactionRepository.findAllTransactionsByType(type)
         return filtered.map { transaction ->
-            TransactionDto(
-                id = transaction.id!!,
-                type = transaction.type,
-                symbol = transaction.symbol,
-                quantity = transaction.quantity,
-                date = transaction.date,
-            )
+            TransactionDto.fromEntity(transaction)
         }
     }
 
     fun getAllBySymbol(symbol: String): List<TransactionDto> {
         val filtered = transactionRepository.findAllTransactionsBySymbol(symbol)
         return filtered.map { transaction ->
-            TransactionDto(
-                id = transaction.id!!,
-                type = transaction.type,
-                symbol = transaction.symbol,
-                quantity = transaction.quantity,
-                date = transaction.date,
-            )
+            TransactionDto.fromEntity(transaction)
         }
     }
 
     fun deleteById(id: Long): TransactionDto {
         val deleted = transactionRepository.findById(id).get()
         transactionRepository.deleteById(id)
-        return TransactionDto(
-            deleted.id!!,
-            deleted.type,
-            deleted.symbol,
-            deleted.quantity,
-            deleted.date,
-        )
+        return TransactionDto.fromEntity(deleted)
     }
 
     fun updateById(
@@ -110,12 +80,6 @@ class TransactionService(
 
         transactionRepository.save(updated)
 
-        return TransactionDto(
-            updated.id!!,
-            updated.type,
-            updated.symbol,
-            updated.quantity,
-            updated.date,
-        )
+        return TransactionDto.fromEntity(updated)
     }
 }
