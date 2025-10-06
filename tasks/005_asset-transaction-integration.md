@@ -110,3 +110,8 @@ fun createAsset(request: AssetCreateRequest): AssetResponse {
 3. Проверь что создалась SELL транзакция на 5 единиц
 4. Проверь что актив действительно удален
 
+
+
+
+## Доп задачи 
+- добавить и использовать утил метод для создания дто  из ентити бд  как это сделано для [AssetDto.kt](../src/main/kotlin/com/sanya/mg/sanyademo/api/asset/dto/AssetDto.kt)

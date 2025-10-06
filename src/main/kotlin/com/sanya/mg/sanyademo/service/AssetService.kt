@@ -1,6 +1,6 @@
 package com.sanya.mg.sanyademo.service
 
-import com.sanya.mg.sanyademo.api.asset.dto.AssetResponse
+import com.sanya.mg.sanyademo.api.asset.dto.AssetDto
 import com.sanya.mg.sanyademo.common.TransactionType
 import com.sanya.mg.sanyademo.repository.AssetRepository
 import com.sanya.mg.sanyademo.repository.entity.Asset
@@ -18,7 +18,7 @@ class AssetService(
         baseTicker: String,
         quoteTicker: String,
         quantity: BigDecimal,
-    ): AssetResponse {
+    ): AssetDto {
         val forSave = Asset(
             id = null,
             baseTicker = baseTicker,
@@ -33,38 +33,21 @@ class AssetService(
             quantity = saved.quantity,
         )
 
-        return AssetResponse(
-            saved.id!!,
-            saved.baseTicker,
-            saved.quoteTicker,
-            saved.quantity,
-        )
+        return AssetDto fromEntity saved
     }
 
-    fun getAssetById(id: Long): AssetResponse {
+    fun getAssetById(id: Long): AssetDto {
         val found = assetRepository.findById(id).get()
-        return AssetResponse(
-            found.id!!,
-            found.baseTicker,
-            found.quoteTicker,
-            found.quantity,
-        )
+        return AssetDto fromEntity found
     }
 
-    fun getAllAssets(): List<AssetResponse> {
+    fun getAllAssets(): List<AssetDto> {
         val found = assetRepository.findAll()
-        return found.map { asset ->
-            AssetResponse(
-                asset.id!!,
-                asset.baseTicker,
-                asset.quoteTicker,
-                asset.quantity,
-            )
-        }
+        return found.map { asset -> AssetDto fromEntity asset }
     }
 
     @Transactional
-    fun updateAsset(id: Long, quantity: BigDecimal): AssetResponse {
+    fun updateAsset(id: Long, quantity: BigDecimal): AssetDto {
         val found = assetRepository.findById(id).get()
         val updated = Asset(
             found.id!!,
@@ -89,16 +72,11 @@ class AssetService(
 
         val saved = assetRepository.save(updated)
 
-        return AssetResponse(
-            updated.id!!,
-            updated.baseTicker,
-            updated.quoteTicker,
-            updated.quantity,
-        )
+        return AssetDto fromEntity saved
     }
 
     @Transactional
-    fun deleteAsset(id: Long): AssetResponse {
+    fun deleteAsset(id: Long): AssetDto {
         val forDelete = assetRepository.findById(id).get()
 
         transactionService.createTransaction(
@@ -109,11 +87,6 @@ class AssetService(
 
         assetRepository.deleteById(id)
 
-        return AssetResponse(
-            forDelete.id!!,
-            forDelete.baseTicker,
-            forDelete.quoteTicker,
-            forDelete.quantity,
-        )
+        return AssetDto fromEntity forDelete
     }
 }

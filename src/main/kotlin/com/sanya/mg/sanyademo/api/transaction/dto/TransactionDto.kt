@@ -5,7 +5,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
-data class TransactionResponseDto(
+data class TransactionDto(
     val id: Long,
     val type: TransactionType,
     val symbol: String,

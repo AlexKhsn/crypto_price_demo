@@ -1,6 +1,6 @@
 package com.sanya.mg.sanyademo.service
 
-import com.sanya.mg.sanyademo.api.transaction.dto.TransactionResponseDto
+import com.sanya.mg.sanyademo.api.transaction.dto.TransactionDto
 import com.sanya.mg.sanyademo.common.TransactionType
 import com.sanya.mg.sanyademo.repository.TransactionRepository
 import com.sanya.mg.sanyademo.repository.entity.Transaction
@@ -15,7 +15,7 @@ class TransactionService(
         type: TransactionType,
         symbol: String,
         quantity: BigDecimal,
-    ): TransactionResponseDto {
+    ): TransactionDto {
         val forSave = Transaction(
             type = type,
             symbol = symbol,
@@ -23,7 +23,7 @@ class TransactionService(
         )
 
         val saved = transactionRepository.save(forSave)
-        return TransactionResponseDto(
+        return TransactionDto(
             id = saved.id!!,
             saved.type,
             saved.symbol,
@@ -32,10 +32,10 @@ class TransactionService(
         )
     }
 
-    fun getAllTransactions(): List<TransactionResponseDto> {
+    fun getAllTransactions(): List<TransactionDto> {
         val transactions = transactionRepository.findAll()
         return transactions.map { transaction ->
-            TransactionResponseDto(
+            TransactionDto(
                 id = transaction.id!!,
                 type = transaction.type,
                 symbol = transaction.symbol,
@@ -45,9 +45,9 @@ class TransactionService(
         }
     }
 
-    fun getById(id: Long): TransactionResponseDto {
+    fun getById(id: Long): TransactionDto {
         val transaction = transactionRepository.findById(id).get()
-        return TransactionResponseDto(
+        return TransactionDto(
             transaction.id!!,
             transaction.type,
             transaction.symbol,
@@ -56,10 +56,10 @@ class TransactionService(
         )
     }
 
-    fun getAllByType(type: TransactionType): List<TransactionResponseDto> {
+    fun getAllByType(type: TransactionType): List<TransactionDto> {
         val filtered = transactionRepository.findAllTransactionsByType(type)
         return filtered.map { transaction ->
-            TransactionResponseDto(
+            TransactionDto(
                 id = transaction.id!!,
                 type = transaction.type,
                 symbol = transaction.symbol,
@@ -69,10 +69,10 @@ class TransactionService(
         }
     }
 
-    fun getAllBySymbol(symbol: String): List<TransactionResponseDto> {
+    fun getAllBySymbol(symbol: String): List<TransactionDto> {
         val filtered = transactionRepository.findAllTransactionsBySymbol(symbol)
         return filtered.map { transaction ->
-            TransactionResponseDto(
+            TransactionDto(
                 id = transaction.id!!,
                 type = transaction.type,
                 symbol = transaction.symbol,
@@ -82,10 +82,10 @@ class TransactionService(
         }
     }
 
-    fun deleteById(id: Long): TransactionResponseDto {
+    fun deleteById(id: Long): TransactionDto {
         val deleted = transactionRepository.findById(id).get()
         transactionRepository.deleteById(id)
-        return TransactionResponseDto(
+        return TransactionDto(
             deleted.id!!,
             deleted.type,
             deleted.symbol,
@@ -99,7 +99,7 @@ class TransactionService(
         type: TransactionType,
         symbol: String,
         quantity: BigDecimal,
-    ): TransactionResponseDto {
+    ): TransactionDto {
         val transaction = transactionRepository.findById(id).get()
         val updated = Transaction(
             id = transaction.id!!,
@@ -110,7 +110,7 @@ class TransactionService(
 
         transactionRepository.save(updated)
 
-        return TransactionResponseDto(
+        return TransactionDto(
             updated.id!!,
             updated.type,
             updated.symbol,

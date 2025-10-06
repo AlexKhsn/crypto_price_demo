@@ -1,7 +1,7 @@
 package com.sanya.mg.sanyademo.api.asset
 
 import com.sanya.mg.sanyademo.api.asset.dto.AssetCreateRequest
-import com.sanya.mg.sanyademo.api.asset.dto.AssetResponse
+import com.sanya.mg.sanyademo.api.asset.dto.AssetDto
 import com.sanya.mg.sanyademo.api.asset.dto.AssetUpdateRequest
 import com.sanya.mg.sanyademo.service.AssetService
 import org.springframework.http.ResponseEntity
@@ -23,7 +23,7 @@ class AssetController(
     fun create(
         @RequestBody
         request: AssetCreateRequest,
-    ): ResponseEntity<AssetResponse> {
+    ): ResponseEntity<AssetDto> {
         val new = assetService.createAsset(
             baseTicker = request.baseTicker,
             quoteTicker = request.quoteTicker,
@@ -35,7 +35,7 @@ class AssetController(
     @GetMapping("/{id}")
     fun get(
         @PathVariable id: Long,
-    ): ResponseEntity<AssetResponse> {
+    ): ResponseEntity<AssetDto> {
         try {
             val result = assetService.getAssetById(id)
             return ResponseEntity.ok().body(result)
@@ -45,7 +45,7 @@ class AssetController(
     }
 
     @GetMapping
-    fun getAll(): ResponseEntity<List<AssetResponse>> {
+    fun getAll(): ResponseEntity<List<AssetDto>> {
         val result = assetService.getAllAssets()
         return ResponseEntity.ok().body(result)
     }
@@ -53,7 +53,7 @@ class AssetController(
     @DeleteMapping("/{id}")
     fun delete(
         @PathVariable id: Long,
-    ): ResponseEntity<AssetResponse> {
+    ): ResponseEntity<AssetDto> {
         val deleted = assetService.deleteAsset(id)
         return ResponseEntity.ok().body(deleted)
     }
@@ -63,7 +63,7 @@ class AssetController(
         @PathVariable id: Long,
         @RequestBody
         request: AssetUpdateRequest,
-    ): ResponseEntity<AssetResponse> {
+    ): ResponseEntity<AssetDto> {
         try {
             val updated = assetService.updateAsset(id, request.quantity)
             return ResponseEntity.ok().body(updated)
