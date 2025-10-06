@@ -5,6 +5,11 @@
 
 ## Описание
 Необходимо создать полноценную систему пользователей и установить связи между User, Asset и Transaction.
+Посмотреть пару видосов про связи в бд и спринг.
+https://www.youtube.com/watch?v=dcsytBiJBTQ
+https://www.youtube.com/watch?v=2cULkQ1g_BM
+https://www.youtube.com/watch?v=GQfC0nYrto8
+https://www.youtube.com/watch?v=hbNJ5VxRizw&t=4680s
 
 ## Шаг 1: Создать Entity User
 
