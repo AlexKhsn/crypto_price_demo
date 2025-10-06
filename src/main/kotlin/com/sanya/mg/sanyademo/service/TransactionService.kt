@@ -23,7 +23,7 @@ class TransactionService(
         )
 
         val saved = transactionRepository.save(forSave)
-        return TransactionDto.fromEntity(saved)
+        return TransactionDto fromEntity saved
     }
 
     fun getAllTransactions(): List<TransactionDto> {
@@ -41,27 +41,23 @@ class TransactionService(
 
     fun getById(id: Long): TransactionDto {
         val transaction = transactionRepository.findById(id).get()
-        return TransactionDto.fromEntity(transaction)
+        return TransactionDto fromEntity transaction
     }
 
     fun getAllByType(type: TransactionType): List<TransactionDto> {
         val filtered = transactionRepository.findAllTransactionsByType(type)
-        return filtered.map { transaction ->
-            TransactionDto.fromEntity(transaction)
-        }
+        return filtered.map { transaction -> TransactionDto fromEntity transaction }
     }
 
     fun getAllBySymbol(symbol: String): List<TransactionDto> {
         val filtered = transactionRepository.findAllTransactionsBySymbol(symbol)
-        return filtered.map { transaction ->
-            TransactionDto.fromEntity(transaction)
-        }
+        return filtered.map { transaction -> TransactionDto fromEntity transaction }
     }
 
     fun deleteById(id: Long): TransactionDto {
         val deleted = transactionRepository.findById(id).get()
         transactionRepository.deleteById(id)
-        return TransactionDto.fromEntity(deleted)
+        return TransactionDto fromEntity deleted
     }
 
     fun updateById(
@@ -80,6 +76,6 @@ class TransactionService(
 
         transactionRepository.save(updated)
 
-        return TransactionDto.fromEntity(updated)
+        return TransactionDto fromEntity updated
     }
 }
