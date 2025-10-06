@@ -24,7 +24,11 @@ class AssetController(
         @RequestBody
         request: AssetCreateRequest,
     ): ResponseEntity<AssetResponse> {
-        val new = assetService.createAsset(request)
+        val new = assetService.createAsset(
+            baseTicker = request.baseTicker,
+            quoteTicker = request.quoteTicker,
+            quantity = request.quantity,
+        )
         return ResponseEntity.status(201).body(new)
     }
 
@@ -61,7 +65,7 @@ class AssetController(
         request: AssetUpdateRequest,
     ): ResponseEntity<AssetResponse> {
         try {
-            val updated = assetService.updateAsset(id, request)
+            val updated = assetService.updateAsset(id, request.quantity)
             return ResponseEntity.ok().body(updated)
         } catch (e: NoSuchElementException) {
             return ResponseEntity.notFound().build()

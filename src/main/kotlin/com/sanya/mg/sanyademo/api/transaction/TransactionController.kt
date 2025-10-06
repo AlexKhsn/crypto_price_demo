@@ -6,6 +6,7 @@ import com.sanya.mg.sanyademo.common.TransactionType
 import com.sanya.mg.sanyademo.service.TransactionService
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Schema
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -21,12 +22,18 @@ import org.springframework.web.bind.annotation.RestController
 class TransactionController(
     val transactionService: TransactionService,
 ) {
+    @Deprecated("Transaction could be created only when assets are changing")
     @PostMapping
     fun addTransaction(
         @RequestBody request: CreateTransactionDto,
-    ): TransactionResponseDto {
-        val newTransaction = transactionService.createTransaction(request)
-        return newTransaction
+    ): ResponseEntity<TransactionResponseDto> {
+//        val newTransaction = transactionService.createTransaction(
+//            type = request.type,
+//            symbol = request.symbol,
+//            quantity = request.quantity,
+//        )
+//        return newTransaction
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build()
     }
 
     @GetMapping
@@ -56,9 +63,6 @@ class TransactionController(
         return ResponseEntity.ok().body(filteredTransactions)
     }
 
-    // TODO Спросить по поводу enum класса для хранения типов операций и символа
-// FIXME dsfsndfnsdjf
-
     @GetMapping("/symbol/{symbol}")
     fun getTransactionsBySymbol(
         @PathVariable symbol: String,
@@ -67,28 +71,37 @@ class TransactionController(
         return ResponseEntity.ok().body(filtered)
     }
 
+    @Deprecated("Transaction cannot be deleted or changed")
     @DeleteMapping("/{id}")
     fun deleteTransaction(
         @PathVariable id: Long,
     ): ResponseEntity<TransactionResponseDto> {
-        try {
-            val deleted = transactionService.deleteById(id)
-            return ResponseEntity.ok().body(deleted)
-        } catch (e: NoSuchElementException) {
-            return ResponseEntity.notFound().build()
-        }
+//        try {
+//            val deleted = transactionService.deleteById(id)
+//            return ResponseEntity.ok().body(deleted)
+//        } catch (e: NoSuchElementException) {
+//            return ResponseEntity.notFound().build()
+//        }
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build()
     }
 
+    @Deprecated("Transaction cannot be deleted or changed")
     @PutMapping("/{id}")
     fun updateTransaction(
         @PathVariable id: Long,
         @RequestBody request: CreateTransactionDto,
     ): ResponseEntity<TransactionResponseDto> {
-        try {
-            val transaction = transactionService.updateById(id, request)
-            return ResponseEntity.ok().body(transaction)
-        } catch (e: NoSuchElementException) {
-            return ResponseEntity.notFound().build()
-        }
+//        try {
+//            val transaction = transactionService.updateById(
+//                id = id,
+//                type = request.type,
+//                symbol = request.symbol,
+//                quantity = request.quantity,
+//            )
+//            return ResponseEntity.ok().body(transaction)
+//        } catch (e: NoSuchElementException) {
+//            return ResponseEntity.notFound().build()
+//        }
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build()
     }
 }

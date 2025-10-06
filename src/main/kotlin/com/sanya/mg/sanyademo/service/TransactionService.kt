@@ -1,21 +1,25 @@
 package com.sanya.mg.sanyademo.service
 
-import com.sanya.mg.sanyademo.api.transaction.dto.CreateTransactionDto
 import com.sanya.mg.sanyademo.api.transaction.dto.TransactionResponseDto
 import com.sanya.mg.sanyademo.common.TransactionType
 import com.sanya.mg.sanyademo.repository.TransactionRepository
 import com.sanya.mg.sanyademo.repository.entity.Transaction
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 
 @Service
 class TransactionService(
     private val transactionRepository: TransactionRepository,
 ) {
-    fun createTransaction(request: CreateTransactionDto): TransactionResponseDto {
+    fun createTransaction(
+        type: TransactionType,
+        symbol: String,
+        quantity: BigDecimal,
+    ): TransactionResponseDto {
         val forSave = Transaction(
-            type = request.type,
-            symbol = request.symbol,
-            quantity = request.quantity,
+            type = type,
+            symbol = symbol,
+            quantity = quantity,
         )
 
         val saved = transactionRepository.save(forSave)
@@ -90,13 +94,18 @@ class TransactionService(
         )
     }
 
-    fun updateById(id: Long, request: CreateTransactionDto): TransactionResponseDto {
+    fun updateById(
+        id: Long,
+        type: TransactionType,
+        symbol: String,
+        quantity: BigDecimal,
+    ): TransactionResponseDto {
         val transaction = transactionRepository.findById(id).get()
         val updated = Transaction(
-            transaction.id!!,
-            request.type,
-            symbol = request.symbol,
-            quantity = request.quantity,
+            id = transaction.id!!,
+            type = type,
+            symbol = symbol,
+            quantity = quantity,
         )
 
         transactionRepository.save(updated)

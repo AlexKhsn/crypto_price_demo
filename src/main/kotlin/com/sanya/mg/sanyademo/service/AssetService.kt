@@ -1,14 +1,12 @@
 package com.sanya.mg.sanyademo.service
 
-import com.sanya.mg.sanyademo.api.asset.dto.AssetCreateRequest
 import com.sanya.mg.sanyademo.api.asset.dto.AssetResponse
-import com.sanya.mg.sanyademo.api.asset.dto.AssetUpdateRequest
-import com.sanya.mg.sanyademo.api.transaction.dto.CreateTransactionDto
 import com.sanya.mg.sanyademo.common.TransactionType
 import com.sanya.mg.sanyademo.repository.AssetRepository
 import com.sanya.mg.sanyademo.repository.entity.Asset
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 
 @Service
 class AssetService(
@@ -16,21 +14,23 @@ class AssetService(
     val transactionService: TransactionService,
 ) {
     @Transactional
-    fun createAsset(request: AssetCreateRequest): AssetResponse {
+    fun createAsset(
+        baseTicker: String,
+        quoteTicker: String,
+        quantity: BigDecimal,
+    ): AssetResponse {
         val forSave = Asset(
             id = null,
-            baseTicker = request.baseTicker,
-            quoteTicker = request.quoteTicker,
-            quantity = request.quantity,
+            baseTicker = baseTicker,
+            quoteTicker = quoteTicker,
+            quantity = quantity,
         )
         val saved = assetRepository.save(forSave)
 
         transactionService.createTransaction(
-            CreateTransactionDto(
-                type = TransactionType.BUY,
-                symbol = saved.baseTicker,
-                quantity = saved.quantity,
-            ),
+            type = TransactionType.BUY,
+            symbol = saved.baseTicker,
+            quantity = saved.quantity,
         )
 
         return AssetResponse(
@@ -64,35 +64,30 @@ class AssetService(
     }
 
     @Transactional
-    fun updateAsset(id: Long, request: AssetUpdateRequest): AssetResponse {
+    fun updateAsset(id: Long, quantity: BigDecimal): AssetResponse {
         val found = assetRepository.findById(id).get()
         val updated = Asset(
             found.id!!,
             found.baseTicker,
             found.quoteTicker,
-            request.quantity,
+            quantity,
         )
 
-        if(updated.quantity > found.quantity) {
+        if (updated.quantity > found.quantity) {
             transactionService.createTransaction(
-                CreateTransactionDto(
-                    type = TransactionType.BUY,
-                    symbol = updated.baseTicker,
-                    quantity = updated.quantity - found.quantity,
-                )
+                type = TransactionType.BUY,
+                symbol = updated.baseTicker,
+                quantity = updated.quantity - found.quantity,
             )
-        } else if(updated.quantity < found.quantity) {
+        } else if (updated.quantity < found.quantity) {
             transactionService.createTransaction(
-                CreateTransactionDto(
-                    type = TransactionType.SELL,
-                    symbol = updated.baseTicker,
-                    quantity = found.quantity - updated.quantity,
-                )
+                type = TransactionType.SELL,
+                symbol = updated.baseTicker,
+                quantity = found.quantity - updated.quantity,
             )
         }
 
         val saved = assetRepository.save(updated)
-
 
         return AssetResponse(
             updated.id!!,
@@ -107,15 +102,12 @@ class AssetService(
         val forDelete = assetRepository.findById(id).get()
 
         transactionService.createTransaction(
-            CreateTransactionDto(
-                type = TransactionType.SELL,
-                symbol = forDelete.baseTicker,
-                quantity = forDelete.quantity,
-            ),
+            type = TransactionType.SELL,
+            symbol = forDelete.baseTicker,
+            quantity = forDelete.quantity,
         )
 
         assetRepository.deleteById(id)
-
 
         return AssetResponse(
             forDelete.id!!,
