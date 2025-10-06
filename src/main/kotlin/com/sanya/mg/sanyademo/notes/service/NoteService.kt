@@ -16,7 +16,7 @@ class NoteService(
         val note = Note(
             title = request.title,
             content = request.content,
-            isPinned = request.pinned,
+            pinned = request.pinned,
         )
 
         val saved = noteRepository.save(note)
@@ -25,7 +25,7 @@ class NoteService(
             saved.id!!,
             saved.title,
             saved.content,
-            saved.isPinned,
+            saved.pinned,
             saved.createdAt,
             saved.updatedAt,
         )
@@ -34,7 +34,7 @@ class NoteService(
     fun getAllNotes(): List<NoteDto> {
         val notes = noteRepository.findAll()
         val sorted = notes.sortedWith(
-            compareByDescending<Note> { it.isPinned }
+            compareByDescending<Note> { it.pinned }
                 .thenByDescending { it.createdAt },
         )
 
@@ -43,7 +43,7 @@ class NoteService(
                 it.id!!,
                 it.title,
                 it.content,
-                it.isPinned,
+                it.pinned,
                 it.createdAt,
                 it.updatedAt,
             )
@@ -56,7 +56,7 @@ class NoteService(
             note.id!!,
             note.title,
             note.content,
-            note.isPinned,
+            note.pinned,
             note.createdAt,
             note.updatedAt,
         )
@@ -70,7 +70,7 @@ class NoteService(
             content = request.content ?: note.content,
             createdAt = note.createdAt,
             updatedAt = LocalDateTime.now(),
-            isPinned = request.pinned ?: note.isPinned,
+            pinned = request.pinned ?: note.pinned,
         )
 
         noteRepository.save(updatedNote)
@@ -79,7 +79,7 @@ class NoteService(
             updatedNote.id!!,
             updatedNote.title,
             updatedNote.content,
-            updatedNote.isPinned,
+            updatedNote.pinned,
             updatedNote.createdAt,
             updatedNote.updatedAt,
         )

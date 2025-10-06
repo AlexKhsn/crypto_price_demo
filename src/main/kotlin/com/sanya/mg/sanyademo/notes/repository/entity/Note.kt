@@ -19,8 +19,8 @@ data class Note(
     @Column(nullable = true)
     val content: String?,
     //    @Column(nullable = true)
-    @Column("isPinned", nullable = true)
-    val isPinned: Boolean? = false,
+    @Column(name = "isPinned", nullable = true)
+    val pinned: Boolean? = false,
     @Column(nullable = false)
     val createdAt: LocalDateTime = LocalDateTime.now(),
     @Column(nullable = false)
