@@ -1,7 +1,7 @@
-package com.sanya.mg.sanyademo.transactions.repository
+package com.sanya.mg.sanyademo.repository
 
-import com.sanya.mg.sanyademo.transactions.common.TransactionType
-import com.sanya.mg.sanyademo.transactions.repository.entity.Transaction
+import com.sanya.mg.sanyademo.common.TransactionType
+import com.sanya.mg.sanyademo.repository.entity.Transaction
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 

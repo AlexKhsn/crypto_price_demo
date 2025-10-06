@@ -1,4 +1,4 @@
-package com.sanya.mg.sanyademo.binance.service
+package com.sanya.mg.sanyademo.service
 
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient

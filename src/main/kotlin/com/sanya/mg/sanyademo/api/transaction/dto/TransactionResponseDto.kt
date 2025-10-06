@@ -1,6 +1,6 @@
-package com.sanya.mg.sanyademo.transactions.api.dto
+package com.sanya.mg.sanyademo.api.transaction.dto
 
-import com.sanya.mg.sanyademo.transactions.common.TransactionType
+import com.sanya.mg.sanyademo.common.TransactionType
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit

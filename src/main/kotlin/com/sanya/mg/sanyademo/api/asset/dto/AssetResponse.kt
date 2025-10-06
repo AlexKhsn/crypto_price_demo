@@ -1,4 +1,4 @@
-package com.sanya.mg.sanyademo.asset.api.dto
+package com.sanya.mg.sanyademo.api.asset.dto
 
 import java.math.BigDecimal
 

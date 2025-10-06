@@ -1,9 +1,9 @@
-package com.sanya.mg.sanyademo.transactions.api
+package com.sanya.mg.sanyademo.api.transaction
 
-import com.sanya.mg.sanyademo.transactions.api.dto.CreateTransactionDto
-import com.sanya.mg.sanyademo.transactions.api.dto.TransactionResponseDto
-import com.sanya.mg.sanyademo.transactions.common.TransactionType
-import com.sanya.mg.sanyademo.transactions.service.TransactionService
+import com.sanya.mg.sanyademo.api.transaction.dto.CreateTransactionDto
+import com.sanya.mg.sanyademo.api.transaction.dto.TransactionResponseDto
+import com.sanya.mg.sanyademo.common.TransactionType
+import com.sanya.mg.sanyademo.service.TransactionService
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Schema
 import org.springframework.http.ResponseEntity

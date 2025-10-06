@@ -1,10 +1,10 @@
-package com.sanya.mg.sanyademo.asset.service
+package com.sanya.mg.sanyademo.service
 
-import com.sanya.mg.sanyademo.asset.api.dto.AssetCreateRequest
-import com.sanya.mg.sanyademo.asset.api.dto.AssetResponse
-import com.sanya.mg.sanyademo.asset.api.dto.AssetUpdateRequest
-import com.sanya.mg.sanyademo.asset.repository.AssetRepository
-import com.sanya.mg.sanyademo.asset.repository.entity.Asset
+import com.sanya.mg.sanyademo.api.asset.dto.AssetCreateRequest
+import com.sanya.mg.sanyademo.api.asset.dto.AssetResponse
+import com.sanya.mg.sanyademo.api.asset.dto.AssetUpdateRequest
+import com.sanya.mg.sanyademo.repository.AssetRepository
+import com.sanya.mg.sanyademo.repository.entity.Asset
 import org.springframework.stereotype.Service
 
 @Service

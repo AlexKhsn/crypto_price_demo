@@ -1,4 +1,4 @@
-package com.sanya.mg.sanyademo.transactions.common
+package com.sanya.mg.sanyademo.common
 
 enum class TransactionType {
     SELL,

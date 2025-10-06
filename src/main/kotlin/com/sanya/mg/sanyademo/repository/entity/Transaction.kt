@@ -1,6 +1,6 @@
-package com.sanya.mg.sanyademo.transactions.repository.entity
+package com.sanya.mg.sanyademo.repository.entity
 
-import com.sanya.mg.sanyademo.transactions.common.TransactionType
+import com.sanya.mg.sanyademo.common.TransactionType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
