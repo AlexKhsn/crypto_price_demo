@@ -16,7 +16,6 @@ class TransactionService(
             type = request.type,
             symbol = request.symbol,
             quantity = request.quantity,
-            price = request.price,
         )
 
         val saved = transactionRepository.save(forSave)
@@ -25,7 +24,6 @@ class TransactionService(
             saved.type,
             saved.symbol,
             saved.quantity,
-            saved.price,
             saved.date,
         )
     }
@@ -38,7 +36,6 @@ class TransactionService(
                 type = transaction.type,
                 symbol = transaction.symbol,
                 quantity = transaction.quantity,
-                price = transaction.price,
                 date = transaction.date,
             )
         }
@@ -51,7 +48,6 @@ class TransactionService(
             transaction.type,
             transaction.symbol,
             transaction.quantity,
-            transaction.price,
             transaction.date,
         )
     }
@@ -64,7 +60,6 @@ class TransactionService(
                 type = transaction.type,
                 symbol = transaction.symbol,
                 quantity = transaction.quantity,
-                price = transaction.price,
                 date = transaction.date,
             )
         }
@@ -78,7 +73,6 @@ class TransactionService(
                 type = transaction.type,
                 symbol = transaction.symbol,
                 quantity = transaction.quantity,
-                price = transaction.price,
                 date = transaction.date,
             )
         }
@@ -92,7 +86,6 @@ class TransactionService(
             deleted.type,
             deleted.symbol,
             deleted.quantity,
-            deleted.price,
             deleted.date,
         )
     }
@@ -104,7 +97,6 @@ class TransactionService(
             request.type,
             symbol = request.symbol,
             quantity = request.quantity,
-            price = request.price,
         )
 
         transactionRepository.save(updated)
@@ -114,25 +106,7 @@ class TransactionService(
             updated.type,
             updated.symbol,
             updated.quantity,
-            updated.price,
             updated.date,
         )
-    }
-
-    fun getStatisticsBySymbol(symbol: String): String {
-        val filtered = transactionRepository.findAllTransactionsBySymbol(symbol)
-        val buyTransactions = filtered.filter { transaction -> transaction.type == TransactionType.BUY }
-        val sellTransactions = filtered.filter { transaction -> transaction.type == TransactionType.SELL }
-        val totalBuyAmount = buyTransactions.sumOf { it.quantity }
-        val totalSellAmount = sellTransactions.sumOf { it.quantity }
-        val buyAverage = buyTransactions.sumOf { it.price } / buyTransactions.size.toBigDecimal()
-        val sellAverage = sellTransactions.sumOf { it.price } / sellTransactions.size.toBigDecimal()
-
-        return """
-             - Сколько всего куплено: $totalBuyAmount
-             - Сколько всего продано: $totalSellAmount
-             - Средняя цена покупки: $buyAverage
-             - Средняя цена продажи: $sellAverage
-            """.trimIndent()
     }
 }

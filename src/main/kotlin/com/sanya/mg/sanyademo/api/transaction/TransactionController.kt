@@ -91,12 +91,4 @@ class TransactionController(
             return ResponseEntity.notFound().build()
         }
     }
-
-    @GetMapping("/stats/{symbol}")
-    fun getStatisticsBySymbol(
-        @PathVariable symbol: String,
-    ): String {
-        val statistics = transactionService.getStatisticsBySymbol(symbol)
-        return statistics
-    }
 }

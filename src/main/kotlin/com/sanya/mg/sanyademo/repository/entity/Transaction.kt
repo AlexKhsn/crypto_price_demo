@@ -26,7 +26,5 @@ data class Transaction(
     @Column(nullable = false)
     val quantity: BigDecimal,
     @Column(nullable = false)
-    val price: BigDecimal,
-    @Column(nullable = false)
     val date: LocalDate = LocalDate.now(),
 )

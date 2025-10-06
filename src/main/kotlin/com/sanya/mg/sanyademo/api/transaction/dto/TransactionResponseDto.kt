@@ -10,8 +10,6 @@ data class TransactionResponseDto(
     val type: TransactionType,
     val symbol: String,
     val quantity: BigDecimal,
-    val price: BigDecimal,
     val date: LocalDate,
-    val totalValue: BigDecimal = quantity * price,
     val daysAgo: Long = ChronoUnit.DAYS.between(date, LocalDate.now()),
 )
