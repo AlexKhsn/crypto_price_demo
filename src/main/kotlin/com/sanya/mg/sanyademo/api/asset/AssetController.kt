@@ -54,6 +54,7 @@ class AssetController(
     fun delete(
         @PathVariable id: Long,
     ): ResponseEntity<AssetDto> {
+        // FIXME handle not found error
         val deleted = assetService.deleteAsset(id)
         return ResponseEntity.ok().body(deleted)
     }
