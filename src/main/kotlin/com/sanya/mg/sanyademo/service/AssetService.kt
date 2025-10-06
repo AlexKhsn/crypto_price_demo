@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service
 class AssetService(
     private val repository: AssetRepository,
     val assetRepository: AssetRepository,
+    val transactionService: TransactionService,
 ) {
     fun createAsset(request: AssetCreateRequest): AssetResponse {
         val forSave = Asset(
