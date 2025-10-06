@@ -1,9 +1,9 @@
-package com.sanya.mg.sanyademo.service
+package com.sanya.mg.sanyademo.transactions.service
 
-import com.sanya.mg.sanyademo.dto.CreateTransactionDto
-import com.sanya.mg.sanyademo.dto.TransactionResponseDto
-import com.sanya.mg.sanyademo.entity.Transaction
-import com.sanya.mg.sanyademo.repository.TransactionRepository
+import com.sanya.mg.sanyademo.transactions.dto.CreateTransactionDto
+import com.sanya.mg.sanyademo.transactions.dto.TransactionResponseDto
+import com.sanya.mg.sanyademo.transactions.entity.Transaction
+import com.sanya.mg.sanyademo.transactions.repository.TransactionRepository
 import org.springframework.stereotype.Service
 
 @Service

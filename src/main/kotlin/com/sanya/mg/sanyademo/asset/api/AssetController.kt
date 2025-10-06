@@ -1,9 +1,9 @@
-package com.sanya.mg.sanyademo.api
+package com.sanya.mg.sanyademo.asset.api
 
-import com.sanya.mg.sanyademo.dto.AssetCreateRequest
-import com.sanya.mg.sanyademo.dto.AssetResponse
-import com.sanya.mg.sanyademo.dto.AssetUpdateRequest
-import com.sanya.mg.sanyademo.service.AssetService
+import com.sanya.mg.sanyademo.asset.dto.AssetCreateRequest
+import com.sanya.mg.sanyademo.asset.dto.AssetResponse
+import com.sanya.mg.sanyademo.asset.dto.AssetUpdateRequest
+import com.sanya.mg.sanyademo.asset.service.AssetService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping

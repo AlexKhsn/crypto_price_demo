@@ -1,8 +1,8 @@
-package com.sanya.mg.sanyademo.api
+package com.sanya.mg.sanyademo.transactions.api
 
-import com.sanya.mg.sanyademo.dto.CreateTransactionDto
-import com.sanya.mg.sanyademo.dto.TransactionResponseDto
-import com.sanya.mg.sanyademo.service.TransactionService
+import com.sanya.mg.sanyademo.transactions.dto.CreateTransactionDto
+import com.sanya.mg.sanyademo.transactions.dto.TransactionResponseDto
+import com.sanya.mg.sanyademo.transactions.service.TransactionService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -20,8 +20,7 @@ class TransactionController(
 ) {
     @PostMapping
     fun addTransaction(
-        @RequestBody
-        request: CreateTransactionDto,
+        @RequestBody request: CreateTransactionDto,
     ): TransactionResponseDto {
         val newTransaction = transactionService.createTransaction(request)
         return newTransaction
@@ -53,7 +52,8 @@ class TransactionController(
         return ResponseEntity.ok().body(filteredTransactions)
     }
 
-    // Спросить по поводу enum класса для хранения типов операций и символа
+    // TODO Спросить по поводу enum класса для хранения типов операций и символа
+// FIXME dsfsndfnsdjf
 
     @GetMapping("/symbol/{symbol}")
     fun getTransactionsBySymbol(

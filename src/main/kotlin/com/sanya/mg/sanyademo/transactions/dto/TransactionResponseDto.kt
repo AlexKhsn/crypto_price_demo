@@ -1,4 +1,4 @@
-package com.sanya.mg.sanyademo.dto
+package com.sanya.mg.sanyademo.transactions.dto
 
 import java.math.BigDecimal
 import java.time.LocalDate

@@ -1,6 +1,6 @@
-package com.sanya.mg.sanyademo.api
+package com.sanya.mg.sanyademo.binance.api
 
-import com.sanya.mg.sanyademo.service.BinanceService
+import com.sanya.mg.sanyademo.binance.service.BinanceService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
