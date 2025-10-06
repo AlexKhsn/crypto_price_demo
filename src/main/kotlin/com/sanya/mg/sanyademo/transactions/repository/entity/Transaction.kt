@@ -1,7 +1,10 @@
-package com.sanya.mg.sanyademo.transactions.entity
+package com.sanya.mg.sanyademo.transactions.repository.entity
 
+import com.sanya.mg.sanyademo.transactions.common.TransactionType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -16,7 +19,8 @@ data class Transaction(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
     @Column(nullable = false)
-    val type: String,
+    @Enumerated(EnumType.STRING)
+    val type: TransactionType,
     @Column(nullable = false)
     val symbol: String,
     @Column(nullable = false)

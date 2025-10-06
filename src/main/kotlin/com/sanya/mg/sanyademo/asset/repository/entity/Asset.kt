@@ -1,4 +1,4 @@
-package com.sanya.mg.sanyademo.asset.entity
+package com.sanya.mg.sanyademo.asset.repository.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity

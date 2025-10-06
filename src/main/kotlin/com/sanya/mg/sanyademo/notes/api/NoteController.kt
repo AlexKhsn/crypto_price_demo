@@ -1,8 +1,8 @@
 package com.sanya.mg.sanyademo.notes.api
 
-import com.sanya.mg.sanyademo.notes.dto.CreateNoteDto
-import com.sanya.mg.sanyademo.notes.dto.NoteResponseDto
-import com.sanya.mg.sanyademo.notes.dto.UpdateNoteDto
+import com.sanya.mg.sanyademo.notes.api.dto.CreateNoteRequest
+import com.sanya.mg.sanyademo.notes.api.dto.NoteDto
+import com.sanya.mg.sanyademo.notes.api.dto.UpdateNoteRequest
 import com.sanya.mg.sanyademo.notes.service.NoteService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -21,14 +21,14 @@ class NoteController(
     @PostMapping
     fun addNote(
         @RequestBody
-        request: CreateNoteDto,
-    ): NoteResponseDto {
+        request: CreateNoteRequest,
+    ): NoteDto {
         val newNote = noteService.createNote(request)
         return newNote
     }
 
     @GetMapping
-    fun getNotes(): List<NoteResponseDto> {
+    fun getNotes(): List<NoteDto> {
         val notes = noteService.getAllNotes()
         return notes
     }
@@ -36,7 +36,7 @@ class NoteController(
     @GetMapping("/{id}")
     fun getNoteById(
         @PathVariable id: Long,
-    ): ResponseEntity<NoteResponseDto> {
+    ): ResponseEntity<NoteDto> {
         try {
             val note = noteService.getById(id)
             return ResponseEntity.ok().body(note)
@@ -49,8 +49,8 @@ class NoteController(
     fun updateNote(
         @PathVariable id: Long,
         @RequestBody
-        request: UpdateNoteDto,
-    ): ResponseEntity<NoteResponseDto> {
+        request: UpdateNoteRequest,
+    ): ResponseEntity<NoteDto> {
         try {
             val updatedNote = noteService.updateNote(id, request)
             return ResponseEntity.ok().body(updatedNote)

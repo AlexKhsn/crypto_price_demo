@@ -1,6 +1,6 @@
-package com.sanya.mg.sanyademo.notes.dto
+package com.sanya.mg.sanyademo.notes.api.dto
 
-data class UpdateNoteDto(
+data class UpdateNoteRequest(
     val title: String?,
     val content: String?,
     val pinned: Boolean?,

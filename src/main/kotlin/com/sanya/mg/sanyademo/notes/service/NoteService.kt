@@ -1,10 +1,10 @@
 package com.sanya.mg.sanyademo.notes.service
 
-import com.sanya.mg.sanyademo.notes.dto.CreateNoteDto
-import com.sanya.mg.sanyademo.notes.dto.NoteResponseDto
-import com.sanya.mg.sanyademo.notes.dto.UpdateNoteDto
-import com.sanya.mg.sanyademo.notes.entity.Note
+import com.sanya.mg.sanyademo.notes.api.dto.CreateNoteRequest
+import com.sanya.mg.sanyademo.notes.api.dto.NoteDto
+import com.sanya.mg.sanyademo.notes.api.dto.UpdateNoteRequest
 import com.sanya.mg.sanyademo.notes.repository.NoteRepository
+import com.sanya.mg.sanyademo.notes.repository.entity.Note
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
@@ -12,57 +12,57 @@ import java.time.LocalDateTime
 class NoteService(
     private val noteRepository: NoteRepository,
 ) {
-    fun createNote(request: CreateNoteDto): NoteResponseDto {
+    fun createNote(request: CreateNoteRequest): NoteDto {
         val note = Note(
             title = request.title,
             content = request.content,
-            pinned = request.pinned,
+            isPinned = request.pinned,
         )
 
         val saved = noteRepository.save(note)
 
-        return NoteResponseDto(
+        return NoteDto(
             saved.id!!,
             saved.title,
             saved.content,
-            saved.pinned,
+            saved.isPinned,
             saved.createdAt,
             saved.updatedAt,
         )
     }
 
-    fun getAllNotes(): List<NoteResponseDto> {
+    fun getAllNotes(): List<NoteDto> {
         val notes = noteRepository.findAll()
         val sorted = notes.sortedWith(
-            compareByDescending<Note> { it.pinned }
+            compareByDescending<Note> { it.isPinned }
                 .thenByDescending { it.createdAt },
         )
 
         return sorted.map {
-            NoteResponseDto(
+            NoteDto(
                 it.id!!,
                 it.title,
                 it.content,
-                it.pinned,
+                it.isPinned,
                 it.createdAt,
                 it.updatedAt,
             )
         }
     }
 
-    fun getById(id: Long): NoteResponseDto {
+    fun getById(id: Long): NoteDto {
         val note = noteRepository.findById(id).get()
-        return NoteResponseDto(
+        return NoteDto(
             note.id!!,
             note.title,
             note.content,
-            note.pinned,
+            note.isPinned,
             note.createdAt,
             note.updatedAt,
         )
     }
 
-    fun updateNote(id: Long, request: UpdateNoteDto): NoteResponseDto {
+    fun updateNote(id: Long, request: UpdateNoteRequest): NoteDto {
         val note = noteRepository.findById(id).get()
         val updatedNote = Note(
             id = note.id,
@@ -70,16 +70,16 @@ class NoteService(
             content = request.content ?: note.content,
             createdAt = note.createdAt,
             updatedAt = LocalDateTime.now(),
-            pinned = request.pinned ?: note.pinned,
+            isPinned = request.pinned ?: note.isPinned,
         )
 
         noteRepository.save(updatedNote)
 
-        return NoteResponseDto(
+        return NoteDto(
             updatedNote.id!!,
             updatedNote.title,
             updatedNote.content,
-            updatedNote.pinned,
+            updatedNote.isPinned,
             updatedNote.createdAt,
             updatedNote.updatedAt,
         )

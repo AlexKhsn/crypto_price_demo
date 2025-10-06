@@ -1,9 +1,8 @@
-package com.sanya.mg.sanyademo.asset.dto
+package com.sanya.mg.sanyademo.asset.api.dto
 
 import java.math.BigDecimal
 
-data class AssetResponse(
-    val id: Long,
+data class AssetCreateRequest(
     val baseTicker: String,
     val quoteTicker: String,
     val quantity: BigDecimal,

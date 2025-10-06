@@ -1,6 +1,6 @@
-package com.sanya.mg.sanyademo.notes.dto
+package com.sanya.mg.sanyademo.notes.api.dto
 
-data class CreateNoteDto(
+data class CreateNoteRequest(
     val title: String,
     val content: String?,
     val pinned: Boolean?,

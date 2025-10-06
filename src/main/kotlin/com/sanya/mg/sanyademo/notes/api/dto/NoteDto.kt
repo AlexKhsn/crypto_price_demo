@@ -1,9 +1,9 @@
-package com.sanya.mg.sanyademo.notes.dto
+package com.sanya.mg.sanyademo.notes.api.dto
 
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
-data class NoteResponseDto(
+data class NoteDto(
     val id: Long,
     val title: String,
     val content: String?,

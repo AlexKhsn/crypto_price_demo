@@ -1,9 +1,10 @@
 package com.sanya.mg.sanyademo.transactions.service
 
-import com.sanya.mg.sanyademo.transactions.dto.CreateTransactionDto
-import com.sanya.mg.sanyademo.transactions.dto.TransactionResponseDto
-import com.sanya.mg.sanyademo.transactions.entity.Transaction
+import com.sanya.mg.sanyademo.transactions.api.dto.CreateTransactionDto
+import com.sanya.mg.sanyademo.transactions.api.dto.TransactionResponseDto
+import com.sanya.mg.sanyademo.transactions.common.TransactionType
 import com.sanya.mg.sanyademo.transactions.repository.TransactionRepository
+import com.sanya.mg.sanyademo.transactions.repository.entity.Transaction
 import org.springframework.stereotype.Service
 
 @Service
@@ -55,7 +56,7 @@ class TransactionService(
         )
     }
 
-    fun getAllByType(type: String): List<TransactionResponseDto> {
+    fun getAllByType(type: TransactionType): List<TransactionResponseDto> {
         val filtered = transactionRepository.findAllTransactionsByType(type)
         return filtered.map { transaction ->
             TransactionResponseDto(
@@ -120,8 +121,8 @@ class TransactionService(
 
     fun getStatisticsBySymbol(symbol: String): String {
         val filtered = transactionRepository.findAllTransactionsBySymbol(symbol)
-        val buyTransactions = filtered.filter { transaction -> transaction.type == "BUY" }
-        val sellTransactions = filtered.filter { transaction -> transaction.type == "SELL" }
+        val buyTransactions = filtered.filter { transaction -> transaction.type == TransactionType.BUY }
+        val sellTransactions = filtered.filter { transaction -> transaction.type == TransactionType.SELL }
         val totalBuyAmount = buyTransactions.sumOf { it.quantity }
         val totalSellAmount = sellTransactions.sumOf { it.quantity }
         val buyAverage = buyTransactions.sumOf { it.price } / buyTransactions.size.toBigDecimal()

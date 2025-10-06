@@ -1,4 +1,4 @@
-package com.sanya.mg.sanyademo.notes.entity
+package com.sanya.mg.sanyademo.notes.repository.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -18,8 +18,9 @@ data class Note(
     val title: String,
     @Column(nullable = true)
     val content: String?,
-    @Column(nullable = true)
-    val pinned: Boolean? = false,
+    //    @Column(nullable = true)
+    @Column("isPinned", nullable = true)
+    val isPinned: Boolean? = false,
     @Column(nullable = false)
     val createdAt: LocalDateTime = LocalDateTime.now(),
     @Column(nullable = false)

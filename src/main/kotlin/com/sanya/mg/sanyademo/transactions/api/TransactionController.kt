@@ -1,8 +1,11 @@
 package com.sanya.mg.sanyademo.transactions.api
 
-import com.sanya.mg.sanyademo.transactions.dto.CreateTransactionDto
-import com.sanya.mg.sanyademo.transactions.dto.TransactionResponseDto
+import com.sanya.mg.sanyademo.transactions.api.dto.CreateTransactionDto
+import com.sanya.mg.sanyademo.transactions.api.dto.TransactionResponseDto
+import com.sanya.mg.sanyademo.transactions.common.TransactionType
 import com.sanya.mg.sanyademo.transactions.service.TransactionService
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Schema
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -46,7 +49,8 @@ class TransactionController(
 
     @GetMapping("/type/{type}")
     fun getTransactionsByType(
-        @PathVariable type: String,
+        @Parameter(schema = Schema(implementation = TransactionType::class))
+        @PathVariable type: TransactionType,
     ): ResponseEntity<List<TransactionResponseDto>> {
         val filteredTransactions = transactionService.getAllByType(type)
         return ResponseEntity.ok().body(filteredTransactions)
