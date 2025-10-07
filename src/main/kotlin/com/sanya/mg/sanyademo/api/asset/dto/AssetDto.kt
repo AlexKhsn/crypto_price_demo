@@ -21,7 +21,7 @@ data class AssetDto(
             id = entity.id!!,
             baseTicker = entity.baseTicker,
             quoteTicker = entity.quoteTicker,
-            quantity = entity.quantity,
+            quantity = entity.quantity.stripTrailingZeros(),
             userId = entity.user.id!!,
         )
     }

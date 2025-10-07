@@ -6,6 +6,7 @@ import com.sanya.mg.sanyademo.api.asset.dto.AssetUpdateRequest
 import com.sanya.mg.sanyademo.service.AssetService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -25,6 +26,7 @@ class AssetController(
     @Operation(summary = "Create new asset", description = "Creates a new asset for a user")
     @PostMapping
     fun create(
+        @Valid
         @RequestBody
         request: AssetCreateRequest,
     ): ResponseEntity<AssetDto> {
@@ -87,7 +89,7 @@ class AssetController(
     @PutMapping("/{id}")
     fun update(
         @PathVariable id: Long,
-        @RequestBody
+        @Valid @RequestBody
         request: AssetUpdateRequest,
     ): ResponseEntity<AssetDto> {
         try {
