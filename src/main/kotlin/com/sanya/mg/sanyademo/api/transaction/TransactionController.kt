@@ -4,8 +4,10 @@ import com.sanya.mg.sanyademo.api.transaction.dto.CreateTransactionDto
 import com.sanya.mg.sanyademo.api.transaction.dto.TransactionDto
 import com.sanya.mg.sanyademo.common.TransactionType
 import com.sanya.mg.sanyademo.service.TransactionService
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -19,9 +21,14 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/transactions")
+@Tag(name = "Transactions", description = "Transaction management API")
 class TransactionController(
     val transactionService: TransactionService,
 ) {
+    @Operation(
+        summary = "Create transaction",
+        description = "Creates a new transaction (deprecated - transactions are created automatically when assets change)",
+    )
     @Deprecated("Transaction could be created only when assets are changing")
     @PostMapping
     fun addTransaction(
@@ -36,12 +43,14 @@ class TransactionController(
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build()
     }
 
+    @Operation(summary = "Get all transactions", description = "Returns a list of all transactions")
     @GetMapping
     fun getTransactions(): ResponseEntity<List<TransactionDto>> {
         val result = transactionService.getAllTransactions()
         return ResponseEntity.ok().body(result)
     }
 
+    @Operation(summary = "Get transaction by ID", description = "Returns a single transaction by its ID")
     @GetMapping("/{id}")
     fun getTransactionById(
         @PathVariable id: Long,
@@ -54,6 +63,7 @@ class TransactionController(
         }
     }
 
+    @Operation(summary = "Get transactions by type", description = "Returns all transactions filtered by type (BUY or SELL)")
     @GetMapping("/type/{type}")
     fun getTransactionsByType(
         @Parameter(schema = Schema(implementation = TransactionType::class))
@@ -63,6 +73,7 @@ class TransactionController(
         return ResponseEntity.ok().body(filteredTransactions)
     }
 
+    @Operation(summary = "Get transactions by symbol", description = "Returns all transactions filtered by trading symbol")
     @GetMapping("/symbol/{symbol}")
     fun getTransactionsBySymbol(
         @PathVariable symbol: String,
@@ -71,6 +82,7 @@ class TransactionController(
         return ResponseEntity.ok().body(filtered)
     }
 
+    @Operation(summary = "Delete transaction", description = "Deletes a transaction (deprecated - transactions cannot be deleted)")
     @Deprecated("Transaction cannot be deleted or changed")
     @DeleteMapping("/{id}")
     fun deleteTransaction(
@@ -85,6 +97,7 @@ class TransactionController(
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build()
     }
 
+    @Operation(summary = "Update transaction", description = "Updates a transaction (deprecated - transactions cannot be modified)")
     @Deprecated("Transaction cannot be deleted or changed")
     @PutMapping("/{id}")
     fun updateTransaction(

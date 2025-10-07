@@ -4,7 +4,6 @@ import com.sanya.mg.sanyademo.api.asset.dto.AssetDto
 import com.sanya.mg.sanyademo.common.TransactionType
 import com.sanya.mg.sanyademo.repository.AssetRepository
 import com.sanya.mg.sanyademo.repository.entity.Asset
-import com.sanya.mg.sanyademo.repository.entity.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -13,14 +12,16 @@ import java.math.BigDecimal
 class AssetService(
     private val assetRepository: AssetRepository,
     val transactionService: TransactionService,
+    private val userService: UserService,
 ) {
     @Transactional
     fun createAsset(
         baseTicker: String,
         quoteTicker: String,
         quantity: BigDecimal,
-        user: User,
+        user: Long,
     ): AssetDto {
+        val user = userService.getUserEntityById(user)
         val forSave = Asset(
             id = null,
             baseTicker = baseTicker,
@@ -98,7 +99,8 @@ class AssetService(
         return AssetDto fromEntity forDelete
     }
 
-    fun getUsersAssets(user: User): List<AssetDto> {
+    fun getUsersAssets(userId: Long): List<AssetDto> {
+        val user = userService.getUserEntityById(userId)
         return user.assets.map { asset -> AssetDto.fromEntity(asset) }
     }
 }
