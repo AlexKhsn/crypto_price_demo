@@ -51,4 +51,8 @@ class UserService(
         userRepository.deleteById(id)
         return UserDto fromEntity deletedUser
     }
+
+    fun getUserEntityById(id: Long): User {
+        return userRepository.findById(id).get()
+    }
 }

@@ -6,4 +6,5 @@ data class AssetCreateRequest(
     val baseTicker: String,
     val quoteTicker: String,
     val quantity: BigDecimal,
+    val userId: Long,
 )

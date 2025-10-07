@@ -4,6 +4,7 @@ import com.sanya.mg.sanyademo.api.asset.dto.AssetCreateRequest
 import com.sanya.mg.sanyademo.api.asset.dto.AssetDto
 import com.sanya.mg.sanyademo.api.asset.dto.AssetUpdateRequest
 import com.sanya.mg.sanyademo.service.AssetService
+import com.sanya.mg.sanyademo.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -18,16 +19,19 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/assets")
 class AssetController(
     private val assetService: AssetService,
+    private val userService: UserService,
 ) {
     @PostMapping
     fun create(
         @RequestBody
         request: AssetCreateRequest,
     ): ResponseEntity<AssetDto> {
+        val user = userService.getUserById(request.userId)
         val new = assetService.createAsset(
             baseTicker = request.baseTicker,
             quoteTicker = request.quoteTicker,
             quantity = request.quantity,
+            user = userService.getUserEntityById(user.id),
         )
         return ResponseEntity.status(201).body(new)
     }
@@ -48,6 +52,19 @@ class AssetController(
     fun getAll(): ResponseEntity<List<AssetDto>> {
         val result = assetService.getAllAssets()
         return ResponseEntity.ok().body(result)
+    }
+
+    @GetMapping("/users/{id}")
+    fun getUserAssetsById(
+        @PathVariable id: Long,
+    ): ResponseEntity<List<AssetDto>> {
+        try {
+            val user = userService.getUserEntityById(id)
+            val assets = assetService.getUsersAssets(user)
+            return ResponseEntity.ok().body(assets)
+        } catch (e: NoSuchElementException) {
+            return ResponseEntity.notFound().build()
+        }
     }
 
     @DeleteMapping("/{id}")

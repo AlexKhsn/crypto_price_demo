@@ -8,6 +8,8 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -27,4 +29,7 @@ data class Transaction(
     val quantity: BigDecimal,
     @Column(nullable = false)
     val date: LocalDate = LocalDate.now(),
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    val user: User,
 )

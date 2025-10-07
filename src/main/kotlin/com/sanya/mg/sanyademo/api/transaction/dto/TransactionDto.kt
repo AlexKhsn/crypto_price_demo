@@ -13,6 +13,7 @@ data class TransactionDto(
     val quantity: BigDecimal,
     val date: LocalDate,
     val daysAgo: Long = ChronoUnit.DAYS.between(date, LocalDate.now()),
+    val userId: Long,
 ) {
     companion object {
         infix fun fromEntity(entity: Transaction): TransactionDto {
@@ -22,6 +23,7 @@ data class TransactionDto(
                 entity.symbol,
                 entity.quantity,
                 entity.date,
+                userId = entity.user.id!!,
             )
         }
     }

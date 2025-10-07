@@ -7,4 +7,5 @@ data class CreateTransactionDto(
     val type: TransactionType,
     val symbol: String,
     val quantity: BigDecimal,
+    val userId: Long,
 )

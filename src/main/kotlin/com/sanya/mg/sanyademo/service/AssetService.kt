@@ -4,6 +4,7 @@ import com.sanya.mg.sanyademo.api.asset.dto.AssetDto
 import com.sanya.mg.sanyademo.common.TransactionType
 import com.sanya.mg.sanyademo.repository.AssetRepository
 import com.sanya.mg.sanyademo.repository.entity.Asset
+import com.sanya.mg.sanyademo.repository.entity.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -18,12 +19,14 @@ class AssetService(
         baseTicker: String,
         quoteTicker: String,
         quantity: BigDecimal,
+        user: User,
     ): AssetDto {
         val forSave = Asset(
             id = null,
             baseTicker = baseTicker,
             quoteTicker = quoteTicker,
             quantity = quantity,
+            user = user,
         )
         val saved = assetRepository.save(forSave)
 
@@ -31,6 +34,7 @@ class AssetService(
             type = TransactionType.BUY,
             symbol = saved.baseTicker,
             quantity = saved.quantity,
+            user = saved.user,
         )
 
         return AssetDto fromEntity saved
@@ -54,6 +58,7 @@ class AssetService(
             found.baseTicker,
             found.quoteTicker,
             quantity,
+            found.user,
         )
 
         if (updated.quantity > found.quantity) {
@@ -61,12 +66,14 @@ class AssetService(
                 type = TransactionType.BUY,
                 symbol = updated.baseTicker,
                 quantity = updated.quantity - found.quantity,
+                user = updated.user,
             )
         } else if (updated.quantity < found.quantity) {
             transactionService.createTransaction(
                 type = TransactionType.SELL,
                 symbol = updated.baseTicker,
                 quantity = found.quantity - updated.quantity,
+                user = updated.user,
             )
         }
 
@@ -83,10 +90,15 @@ class AssetService(
             type = TransactionType.SELL,
             symbol = forDelete.baseTicker,
             quantity = forDelete.quantity,
+            user = forDelete.user,
         )
 
         assetRepository.deleteById(id)
 
         return AssetDto fromEntity forDelete
+    }
+
+    fun getUsersAssets(user: User): List<AssetDto> {
+        return user.assets.map { asset -> AssetDto.fromEntity(asset) }
     }
 }

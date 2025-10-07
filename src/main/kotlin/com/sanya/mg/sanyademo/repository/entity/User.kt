@@ -1,10 +1,12 @@
 package com.sanya.mg.sanyademo.repository.entity
 
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import java.time.LocalDateTime
 
@@ -20,4 +22,8 @@ data class User(
     val email: String,
     @Column(nullable = false)
     val createdAt: LocalDateTime,
+    @OneToMany(mappedBy = "user", cascade = [(CascadeType.ALL)])
+    val assets: MutableList<Asset> = mutableListOf(),
+    @OneToMany(mappedBy = "user", cascade = [(CascadeType.ALL)])
+    val transactions: MutableList<Transaction> = mutableListOf(),
 )

@@ -8,6 +8,7 @@ data class AssetDto(
     val baseTicker: String,
     val quoteTicker: String,
     val quantity: BigDecimal,
+    val userId: Long,
 ) {
     companion object {
         infix fun fromEntity(entity: Asset) = AssetDto(
@@ -15,6 +16,7 @@ data class AssetDto(
             baseTicker = entity.baseTicker,
             quoteTicker = entity.quoteTicker,
             quantity = entity.quantity,
+            userId = entity.user.id!!,
         )
     }
 }

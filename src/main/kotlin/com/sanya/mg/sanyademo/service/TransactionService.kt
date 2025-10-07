@@ -4,6 +4,7 @@ import com.sanya.mg.sanyademo.api.transaction.dto.TransactionDto
 import com.sanya.mg.sanyademo.common.TransactionType
 import com.sanya.mg.sanyademo.repository.TransactionRepository
 import com.sanya.mg.sanyademo.repository.entity.Transaction
+import com.sanya.mg.sanyademo.repository.entity.User
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 
@@ -15,11 +16,13 @@ class TransactionService(
         type: TransactionType,
         symbol: String,
         quantity: BigDecimal,
+        user: User,
     ): TransactionDto {
         val forSave = Transaction(
             type = type,
             symbol = symbol,
             quantity = quantity,
+            user = user,
         )
 
         val saved = transactionRepository.save(forSave)
@@ -28,15 +31,7 @@ class TransactionService(
 
     fun getAllTransactions(): List<TransactionDto> {
         val transactions = transactionRepository.findAll()
-        return transactions.map { transaction ->
-            TransactionDto(
-                id = transaction.id!!,
-                type = transaction.type,
-                symbol = transaction.symbol,
-                quantity = transaction.quantity,
-                date = transaction.date,
-            )
-        }
+        return transactions.map { transaction -> TransactionDto fromEntity transaction }
     }
 
     fun getById(id: Long): TransactionDto {
@@ -72,6 +67,7 @@ class TransactionService(
             type = type,
             symbol = symbol,
             quantity = quantity,
+            user = transaction.user,
         )
 
         transactionRepository.save(updated)
