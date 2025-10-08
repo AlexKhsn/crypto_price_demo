@@ -6,10 +6,14 @@ import com.sanya.mg.sanyademo.common.BaseIT
 import com.sanya.mg.sanyademo.repository.AssetRepository
 import com.sanya.mg.sanyademo.repository.UserRepository
 import com.sanya.mg.sanyademo.repository.entity.User
+import com.sanya.mg.sanyademo.service.AssetService
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.comparables.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.http.HttpStatus
+import org.springframework.web.server.ResponseStatusException
 import java.math.BigDecimal
 import java.time.LocalDateTime.now
 
@@ -67,6 +71,7 @@ class AssetControllerIT(
     val assetController: AssetController,
     private val userRepository: UserRepository,
     private val assetRepository: AssetRepository,
+    @Autowired private val assetService: AssetService,
 ) : BaseIT() {
     init {
 
@@ -90,7 +95,7 @@ class AssetControllerIT(
 //            // ...
         }
 
-        test("successfully create asset for existing user") {
+        test("Successfully create asset for existing user") {
             // Arrange
             val userForSave = User(
                 id = null,
@@ -125,7 +130,146 @@ class AssetControllerIT(
             assetFromDb.user.id shouldBe request.userId
         }
 
-        test("should return not found when getting non existing asset by id") {
+        test("Should return 400 when creating 2 assets with  same base ticker and quote ticker for the same user") {
+            // Arrange
+            // создать юзера + заасейвать его
+            // подготовить данные для создания ассетов (создать сущности реквестов)
+
+            val userForSave = User(
+                id = null,
+                username = "Test User",
+                email = "jonh.doe@example.com",
+                createdAt = now(),
+            )
+
+            val user = userRepository.save(userForSave)
+
+            val request1 = AssetCreateRequest(
+                baseTicker = "BTC",
+                quoteTicker = "USDT",
+                quantity = BigDecimal("1.5"),
+                userId = user.id!!,
+            )
+
+            val request2 = AssetCreateRequest(
+                baseTicker = "BTC",
+                quoteTicker = "USDT",
+                quantity = BigDecimal("1.5"),
+                userId = user.id!!,
+            )
+
+            // FIXME Почему подсвечивает !! сверху, но когда уберу то не работает?
+
+            // Act
+            // вызвать метод контроллера и получить респонс1 и ошибку от второго реквеста
+
+            val response1 = assetController.create(request1)
+            val exception = shouldThrow<ResponseStatusException> {
+                assetController.create(request2)
+            }
+
+            // Assert
+            // проверить статус код респонс1
+            // проверить статус код отловленной ошибки
+
+            response1.statusCode shouldBe HttpStatus.CREATED
+            exception.statusCode shouldBe HttpStatus.BAD_REQUEST
+        }
+
+        test("Should return 200 when creating 2 assets with  same base ticker but different quote ticker for the same user") {
+            // Arrange
+            val userForSave = User(
+                id = null,
+                username = "Test User",
+                email = "jonh.doe@example.com",
+                createdAt = now(),
+            )
+            val user = userRepository.save(userForSave)
+            val request1 = AssetCreateRequest(
+                baseTicker = "BTC",
+                quoteTicker = "USDT",
+                quantity = BigDecimal("1.5"),
+                userId = user.id!!,
+            )
+            val request2 = AssetCreateRequest(
+                baseTicker = "BTC",
+                quoteTicker = "ETH",
+                quantity = BigDecimal("1.5"),
+                userId = user.id!!,
+            )
+
+            // Act
+
+            val response1 = assetController.create(request1)
+            val response2 = assetController.create(request2)
+
+            // Assert
+
+            response1.statusCode shouldBe HttpStatus.CREATED
+            response2.statusCode shouldBe HttpStatus.CREATED
+        }
+
+        test("Should return 200 when creating 2 assets with  different base ticker but same quote ticker for the same user") {
+            // Arrange
+            val userForSave = User(
+                id = null,
+                username = "Test User",
+                email = "jonh.doe@example.com",
+                createdAt = now(),
+            )
+            val user = userRepository.save(userForSave)
+            val request1 = AssetCreateRequest(
+                baseTicker = "BTC",
+                quoteTicker = "USDT",
+                quantity = BigDecimal("1.5"),
+                userId = user.id!!,
+            )
+            val request2 = AssetCreateRequest(
+                baseTicker = "ETH",
+                quoteTicker = "USDT",
+                quantity = BigDecimal("1.5"),
+                userId = user.id!!,
+            )
+
+            // Act
+
+            val response1 = assetController.create(request1)
+            val response2 = assetController.create(request2)
+
+            // Assert
+
+            response1.statusCode shouldBe HttpStatus.CREATED
+            response2.statusCode shouldBe HttpStatus.CREATED
+        }
+
+        test("Should successfully get asset by existing ID") {
+            // Arrange
+            val userForSave = User(
+                id = null,
+                username = "Test User",
+                email = "jonh.doe@example.com",
+                createdAt = now(),
+            )
+
+            val user = userRepository.save(userForSave)
+
+            val request = AssetCreateRequest(
+                baseTicker = "BTC",
+                quoteTicker = "USDT",
+                quantity = BigDecimal("1.5"),
+                userId = user.id!!,
+            )
+            val response = assetController.create(request)
+
+            // Act
+            val foundedAsset = assetService.getAssetById(response.body?.id!!)
+
+            // Assert
+
+            foundedAsset.id shouldBe response.body?.id
+        }
+
+        test("Should return not found when getting non existing asset by id") {
             // Arrange
             val nonExistingAssetId = 1L
 

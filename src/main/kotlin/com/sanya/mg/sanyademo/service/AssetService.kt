@@ -4,8 +4,10 @@ import com.sanya.mg.sanyademo.api.asset.dto.AssetDto
 import com.sanya.mg.sanyademo.common.TransactionType
 import com.sanya.mg.sanyademo.repository.AssetRepository
 import com.sanya.mg.sanyademo.repository.entity.Asset
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.server.ResponseStatusException
 import java.math.BigDecimal
 
 @Service
@@ -22,6 +24,11 @@ class AssetService(
         user: Long,
     ): AssetDto {
         val user = userService.getUserEntityById(user)
+
+        val existingAsset = assetRepository.findByUserAndBaseTickerAndQuoteTicker(user, baseTicker, quoteTicker)
+
+        if (existingAsset != null) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Asset already exists")
+
         val forSave = Asset(
             id = null,
             baseTicker = baseTicker,
