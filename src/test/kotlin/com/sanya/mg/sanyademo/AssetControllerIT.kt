@@ -3,12 +3,12 @@ package com.sanya.mg.sanyademo
 import com.sanya.mg.sanyademo.api.asset.AssetController
 import com.sanya.mg.sanyademo.api.asset.dto.AssetCreateRequest
 import com.sanya.mg.sanyademo.common.BaseIT
+import com.sanya.mg.sanyademo.common.TestUtil.shouldMatch
 import com.sanya.mg.sanyademo.repository.AssetRepository
 import com.sanya.mg.sanyademo.repository.UserRepository
 import com.sanya.mg.sanyademo.repository.entity.User
 import com.sanya.mg.sanyademo.service.AssetService
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.matchers.comparables.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
@@ -116,14 +116,9 @@ class AssetControllerIT(
 
             // Assert
             response.statusCode shouldBe HttpStatus.CREATED
-            val responseBody = response.body!!
-            responseBody.baseTicker shouldBe request.baseTicker
-            responseBody.quoteTicker shouldBe request.quoteTicker
-            responseBody.quantity shouldBe request.quantity
-            responseBody.userId shouldBe request.userId
-            responseBody.id shouldBeGreaterThan 0
+            response.body shouldMatch request
 
-            val assetFromDb = assetRepository.findById(responseBody.id).get()
+            val assetFromDb = assetRepository.findById(response.body!!.id).get()
             assetFromDb.baseTicker shouldBe request.baseTicker
             assetFromDb.quoteTicker shouldBe request.quoteTicker
             assetFromDb.quantity.stripTrailingZeros() shouldBe request.quantity
@@ -154,11 +149,9 @@ class AssetControllerIT(
             val request2 = AssetCreateRequest(
                 baseTicker = "BTC",
                 quoteTicker = "USDT",
-                quantity = BigDecimal("1.5"),
+                quantity = BigDecimal("2"),
                 userId = user.id!!,
             )
-
-            // FIXME Почему подсвечивает !! сверху, но когда уберу то не работает?
 
             // Act
             // вызвать метод контроллера и получить респонс1 и ошибку от второго реквеста
@@ -173,6 +166,7 @@ class AssetControllerIT(
             // проверить статус код отловленной ошибки
 
             response1.statusCode shouldBe HttpStatus.CREATED
+            response1.body shouldMatch request1
             exception.statusCode shouldBe HttpStatus.BAD_REQUEST
         }
 
@@ -194,7 +188,7 @@ class AssetControllerIT(
             val request2 = AssetCreateRequest(
                 baseTicker = "BTC",
                 quoteTicker = "ETH",
-                quantity = BigDecimal("1.5"),
+                quantity = BigDecimal("2"),
                 userId = user.id!!,
             )
 
@@ -206,7 +200,10 @@ class AssetControllerIT(
             // Assert
 
             response1.statusCode shouldBe HttpStatus.CREATED
+            response1.body shouldMatch request1
+
             response2.statusCode shouldBe HttpStatus.CREATED
+            response2.body shouldMatch request2
         }
 
         test("Should return 200 when creating 2 assets with  different base ticker but same quote ticker for the same user") {
@@ -227,7 +224,7 @@ class AssetControllerIT(
             val request2 = AssetCreateRequest(
                 baseTicker = "ETH",
                 quoteTicker = "USDT",
-                quantity = BigDecimal("1.5"),
+                quantity = BigDecimal("2"),
                 userId = user.id!!,
             )
 
@@ -239,7 +236,9 @@ class AssetControllerIT(
             // Assert
 
             response1.statusCode shouldBe HttpStatus.CREATED
+            response1.body shouldMatch request1
             response2.statusCode shouldBe HttpStatus.CREATED
+            response2.body shouldMatch request2
         }
 
         test("Should successfully get asset by existing ID") {
@@ -267,6 +266,10 @@ class AssetControllerIT(
             // Assert
 
             foundedAsset.id shouldBe response.body?.id
+            foundedAsset.baseTicker shouldBe request.baseTicker
+            foundedAsset.quoteTicker shouldBe request.quoteTicker
+            foundedAsset.quantity.stripTrailingZeros() shouldBe request.quantity
+            foundedAsset.userId shouldBe request.userId
         }
 
         test("Should return not found when getting non existing asset by id") {
