@@ -168,6 +168,7 @@ class AssetControllerIT(
             response1.statusCode shouldBe HttpStatus.CREATED
             response1.body shouldMatch request1
             exception.statusCode shouldBe HttpStatus.BAD_REQUEST
+            // TODO проверить что одна сохранилась в вторая нет
         }
 
         test("Should return 200 when creating 2 assets with  same base ticker but different quote ticker for the same user") {
