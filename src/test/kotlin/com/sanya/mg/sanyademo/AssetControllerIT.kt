@@ -4,20 +4,19 @@ import com.sanya.mg.sanyademo.api.asset.AssetController
 import com.sanya.mg.sanyademo.api.asset.dto.AssetUpdateRequest
 import com.sanya.mg.sanyademo.api.user.UserController
 import com.sanya.mg.sanyademo.common.BaseIT
-import com.sanya.mg.sanyademo.common.TestUtil.createAndSaveDefaultUser
 import com.sanya.mg.sanyademo.common.TestUtil.createDefaultAssetRequest
+import com.sanya.mg.sanyademo.common.TestUtil.createDefaultUser
 import com.sanya.mg.sanyademo.common.TestUtil.shouldMatch
+import com.sanya.mg.sanyademo.common.TransactionType
 import com.sanya.mg.sanyademo.repository.AssetRepository
+import com.sanya.mg.sanyademo.repository.TransactionRepository
 import com.sanya.mg.sanyademo.repository.UserRepository
-import com.sanya.mg.sanyademo.service.AssetService
-import com.sanya.mg.sanyademo.service.TransactionService
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.collections.shouldContainOnly
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
@@ -74,12 +73,11 @@ import java.math.BigDecimal
  */
 @AutoConfigureWebTestClient
 class AssetControllerIT(
-    val assetController: AssetController,
+    private val assetController: AssetController,
     private val userRepository: UserRepository,
     private val assetRepository: AssetRepository,
     private val userController: UserController,
-    private val transactionService: TransactionService,
-    @Autowired private val assetService: AssetService,
+    private val transactionRepository: TransactionRepository,
 ) : BaseIT() {
     init {
 
@@ -105,8 +103,8 @@ class AssetControllerIT(
 
         test("Successfully create asset for existing user") {
             // Arrange
-            val user = createAndSaveDefaultUser(userRepository)
-            val request = createDefaultAssetRequest(user = user)
+            val user = userRepository.save(createDefaultUser())
+            val request = createDefaultAssetRequest(userId = user.id!!)
 
             // Act
             val response = assetController.create(request)
@@ -127,18 +125,19 @@ class AssetControllerIT(
             // создать юзера + заасейвать его
             // подготовить данные для создания ассетов (создать сущности реквестов)
 
-            val user = createAndSaveDefaultUser(userRepository)
-
-            val request1 = createDefaultAssetRequest(user = user)
-            val request2 = createDefaultAssetRequest(quantity = 2.0, user = user)
+            val user = userRepository.save(createDefaultUser())
+            val request1 = createDefaultAssetRequest(userId = user.id!!)
+            val request2 = createDefaultAssetRequest(quantity = 2.0, userId = user.id!!)
 
             // Act
             // вызвать метод контроллера и получить респонс1 и ошибку от второго реквеста
 
             val response1 = assetController.create(request1)
+            val saved1 = assetRepository.findById(response1.body!!.id).get()
             val exception = shouldThrow<ResponseStatusException> {
                 assetController.create(request2)
             }
+            val saved2 = assetRepository.findById(response1.body!!.id).get()
 
             // Assert
             // проверить статус код респонс1
@@ -148,11 +147,18 @@ class AssetControllerIT(
             response1.body shouldMatch request1
             exception.statusCode shouldBe HttpStatus.BAD_REQUEST
             // TODO проверить что одна сохранилась в вторая нет
-            val assetFromDb = assetRepository.findById(response1.body!!.id).get()
-            assetFromDb.id shouldBe response1.body!!.id
-            assetFromDb.baseTicker shouldBe response1.body!!.baseTicker
-            assetFromDb.quoteTicker shouldBe response1.body!!.quoteTicker
-            assetFromDb.user.id shouldBe response1.body!!.userId
+            saved2.id shouldBe response1.body!!.id
+            saved2.baseTicker shouldBe response1.body!!.baseTicker
+            saved2.quoteTicker shouldBe response1.body!!.quoteTicker
+            saved2.user.id shouldBe response1.body!!.userId
+
+            saved1.id shouldBe saved2.id
+            saved1.baseTicker shouldBe saved2.baseTicker
+            saved1.quoteTicker shouldBe saved2.quoteTicker
+            saved1.quantity shouldBe saved2.quantity
+            saved1.user.id shouldBe saved2.user.id
+
+            assetRepository.findAll().size shouldBe 1
 
             /**
              * Спросить следующее:
@@ -178,9 +184,9 @@ class AssetControllerIT(
 
         test("Should return 200 when creating 2 assets with  same base ticker but different quote ticker for the same user") {
             // Arrange
-            val user = createAndSaveDefaultUser(userRepository)
-            val request1 = createDefaultAssetRequest(user = user)
-            val request2 = createDefaultAssetRequest(quoteTicker = "ETH", quantity = 2.0, user = user)
+            val user = userRepository.save(createDefaultUser())
+            val request1 = createDefaultAssetRequest(userId = user.id!!)
+            val request2 = createDefaultAssetRequest(quoteTicker = "ETH", quantity = 2.0, userId = user.id!!)
 
             // Act
 
@@ -198,17 +204,15 @@ class AssetControllerIT(
 
         test("Should return 200 when creating 2 assets with  different base ticker but same quote ticker for the same user") {
             // Arrange
-            val user = createAndSaveDefaultUser(userRepository)
-            val request1 = createDefaultAssetRequest(user = user)
-            val request2 = createDefaultAssetRequest(baseTicker = "ETH", quantity = 2.0, user = user)
+            val user = userRepository.save(createDefaultUser())
+            val request1 = createDefaultAssetRequest(userId = user.id!!)
+            val request2 = createDefaultAssetRequest(baseTicker = "ETH", quantity = 2.0, userId = user.id!!)
 
             // Act
-
             val response1 = assetController.create(request1)
             val response2 = assetController.create(request2)
 
             // Assert
-
             response1.statusCode shouldBe HttpStatus.CREATED
             response1.body shouldMatch request1
             response2.statusCode shouldBe HttpStatus.CREATED
@@ -217,22 +221,20 @@ class AssetControllerIT(
 
         test("Should successfully get asset by existing ID") {
             // Arrange
-            val user = createAndSaveDefaultUser(userRepository)
-            val request = createDefaultAssetRequest(user = user)
+            val user = userRepository.save(createDefaultUser())
+            val request = createDefaultAssetRequest(userId = user.id!!)
             val response = assetController.create(request)
 
             // Act
-            val foundedAsset = assetService.getAssetById(response.body?.id!!)
-//        TODO То о чем я говорил, здесь я получаю сохраненный в бд ассет через метод сервиса а не метод репозитория
+            val foundedAsset = assetRepository.findById(response.body?.id!!).get()
 
             // Assert
-//        TODO Здесь я сравниваю и с респонсом и реквестом. Как правильно?
 
             foundedAsset.id shouldBe response.body?.id
             foundedAsset.baseTicker shouldBe request.baseTicker
             foundedAsset.quoteTicker shouldBe request.quoteTicker
             foundedAsset.quantity.stripTrailingZeros() shouldBe request.quantity
-            foundedAsset.userId shouldBe request.userId
+            foundedAsset.user.id shouldBe request.userId
         }
 
         test("Should return not found 404 when getting asset by non existing id") {
@@ -248,9 +250,9 @@ class AssetControllerIT(
 
         test("Successfully get all assets when multiple assets exist") {
             //  Arrange
-            val user = createAndSaveDefaultUser(userRepository)
-            val request1 = createDefaultAssetRequest(user = user)
-            val request2 = createDefaultAssetRequest(baseTicker = "ETH", user = user)
+            val user = userRepository.save(createDefaultUser())
+            val request1 = createDefaultAssetRequest(userId = user.id!!)
+            val request2 = createDefaultAssetRequest(baseTicker = "ETH", userId = user.id!!)
             val response1 = assetController.create(request1)
             val response2 = assetController.create(request2)
 
@@ -280,8 +282,8 @@ class AssetControllerIT(
 
         test("Successfully get all assets when 1 asset exist return list with 1 asset") {
             //  Arrange
-            val user = createAndSaveDefaultUser(userRepository)
-            val request = createDefaultAssetRequest(user = user)
+            val user = userRepository.save(createDefaultUser())
+            val request = createDefaultAssetRequest(userId = user.id!!)
             val response = assetController.create(request)
             val allAssetsResponse = assetController.getAll()
 
@@ -297,9 +299,9 @@ class AssetControllerIT(
 
         test("Successfully get all assets for existing user with multiple assets") {
             //  Arrange
-            val user = createAndSaveDefaultUser(userRepository)
-            val request1 = createDefaultAssetRequest(user = user)
-            val request2 = createDefaultAssetRequest("ETH", user = user)
+            val user = userRepository.save(createDefaultUser())
+            val request1 = createDefaultAssetRequest(userId = user.id!!)
+            val request2 = createDefaultAssetRequest("ETH", userId = user.id!!)
             val response1 = assetController.create(request1)
             val response2 = assetController.create(request2)
             val allUserAssetsResponse = assetController.getUserAssetsById(user.id!!)
@@ -320,7 +322,7 @@ class AssetControllerIT(
 
         test("Get assets for existing user with no assets - should return empty list") {
             //  Arrange
-            val user = createAndSaveDefaultUser(userRepository)
+            val user = userRepository.save(createDefaultUser())
             val allUserAssetsResponse = assetController.getUserAssetsById(user.id!!)
 
             //  Act
@@ -344,8 +346,8 @@ class AssetControllerIT(
 
         test("Successfully update asset quantity for existing asset") {
             //  Arrange
-            val user = createAndSaveDefaultUser(userRepository)
-            val request = createDefaultAssetRequest(user = user)
+            val user = userRepository.save(createDefaultUser())
+            val request = createDefaultAssetRequest(userId = user.id!!)
             val response = assetController.create(request)
 
             //  Act
@@ -374,8 +376,8 @@ class AssetControllerIT(
 
         test("Successfully delete existing asset and verify it's removed from DB") {
             //  Arrange
-            val user = createAndSaveDefaultUser(userRepository)
-            val request = createDefaultAssetRequest(user = user)
+            val user = userRepository.save(createDefaultUser())
+            val request = createDefaultAssetRequest(userId = user.id!!)
             val response = assetController.create(request)
 
             //  Act
@@ -394,7 +396,6 @@ class AssetControllerIT(
             val nonExistingAssetId = 1L
 
             //  Act
-
             val deleteResponse = assetController.delete(nonExistingAssetId)
 
             //  Assert
@@ -403,8 +404,8 @@ class AssetControllerIT(
 
         test("Create asset with very large quantity (BigDecimal precision)") {
             //  Arrange
-            val user = createAndSaveDefaultUser(userRepository)
-            val request = createDefaultAssetRequest(quantity = 1.23E+1, user = user)
+            val user = userRepository.save(createDefaultUser())
+            val request = createDefaultAssetRequest(quantity = 1.23E+1, userId = user.id!!)
 
             //  Act
             val response = assetController.create(request)
@@ -416,8 +417,8 @@ class AssetControllerIT(
 
         test("Verify asset-user relationship is maintained correctly (when deleted user - assets deleted too)") {
             //  Arrange
-            val user = createAndSaveDefaultUser(userRepository)
-            val request = createDefaultAssetRequest(user = user)
+            val user = userRepository.save(createDefaultUser())
+            val request = createDefaultAssetRequest(userId = user.id!!)
             val response = assetController.create(request)
 
             //  Act
@@ -436,8 +437,8 @@ class AssetControllerIT(
 
         test("Verify user not deleted when asset deleted") {
             //  Arrange
-            val user = createAndSaveDefaultUser(userRepository)
-            val request = createDefaultAssetRequest(user = user)
+            val user = userRepository.save(createDefaultUser())
+            val request = createDefaultAssetRequest(userId = user.id!!)
             val response = assetController.create(request)
 
             //  Act
@@ -456,26 +457,39 @@ class AssetControllerIT(
 
         test("LATER Verify transactions are created when assets are modified (if applicable)") {
             //  Arrange
-            val user = createAndSaveDefaultUser(userRepository)
-            val request = createDefaultAssetRequest(user = user)
-            val response = assetController.create(request)
+            val user = userRepository.save(createDefaultUser())
+            val assetCreateRequest = createDefaultAssetRequest(userId = user.id!!)
+            val assetId = assetController.create(assetCreateRequest).body!!.id
+            transactionRepository.findAll().size shouldBe 1
 
-            //  Act
+            //  Act & Assert 1
             val updateAssetRequest1 = AssetUpdateRequest(BigDecimal("234.34"))
-            val updateAssetResponse1 = assetController.update(response.body?.id!!, updateAssetRequest1)
-            val updateAssetRequest2 = AssetUpdateRequest(BigDecimal("1.34"))
-            val updateAssetResponse2 = assetController.update(response.body?.id!!, updateAssetRequest2)
-            val user2 = userRepository.findById(user.id!!).get()
-
-            //  Assert
-            response.statusCode shouldBe HttpStatus.CREATED
-            response.body shouldMatch request
+            val expectedTransactionQuantity1 = updateAssetRequest1.quantity - assetCreateRequest.quantity
+            transactionRepository.findAll().filter { it.quantity.stripTrailingZeros() == expectedTransactionQuantity1 }.size shouldBe 0
+            val updateAssetResponse1 = assetController.update(assetId, updateAssetRequest1)
             updateAssetResponse1.statusCode shouldBe HttpStatus.OK
-            updateAssetResponse1.body?.quantity?.stripTrailingZeros() shouldBe updateAssetRequest1.quantity
-            updateAssetResponse1.body?.quantity?.stripTrailingZeros() shouldNotBe response.body?.quantity
+            val allTransactions = transactionRepository.findAll()
+            allTransactions.size shouldBe 2
+            val transaction1 = allTransactions.first { it.quantity.stripTrailingZeros() == expectedTransactionQuantity1 }
+            transaction1.type shouldBe TransactionType.BUY
+            transaction1.symbol shouldBe assetCreateRequest.baseTicker
+            transaction1.quantity.stripTrailingZeros() shouldBe expectedTransactionQuantity1
+            transaction1.user.id shouldBe assetCreateRequest.userId
+
+            //  Act & Assert 2
+            val updateAssetRequest2 = AssetUpdateRequest(BigDecimal("1.34"))
+//            updateAssetRequest1.quantity - updateAssetRequest2.quantity
+            val expectedTransactionQuantity2 = BigDecimal("233")
+            transactionRepository.findAll().filter { it.quantity.stripTrailingZeros() == expectedTransactionQuantity2 }.size shouldBe 0
+            val updateAssetResponse2 = assetController.update(assetId, updateAssetRequest2)
             updateAssetResponse2.statusCode shouldBe HttpStatus.OK
-            updateAssetResponse2.body?.quantity?.stripTrailingZeros() shouldBe updateAssetRequest2.quantity
-            updateAssetResponse2.body?.quantity?.stripTrailingZeros() shouldNotBe response.body?.quantity
+            val allTransactions2 = transactionRepository.findAll()
+            allTransactions2.size shouldBe 3
+            val transaction2 = allTransactions2.first { it.quantity.stripTrailingZeros() == expectedTransactionQuantity2 }
+            transaction2.type shouldBe TransactionType.SELL
+            transaction2.symbol shouldBe assetCreateRequest.baseTicker
+            transaction2.quantity.stripTrailingZeros() shouldBe expectedTransactionQuantity2
+            transaction2.user.id shouldBe assetCreateRequest.userId
         }
     }
 }
