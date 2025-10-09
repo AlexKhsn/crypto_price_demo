@@ -106,6 +106,7 @@ class AssetService(
         return AssetDto fromEntity forDelete
     }
 
+    @Transactional
     fun getUsersAssets(userId: Long): List<AssetDto> {
         val user = userService.getUserEntityById(userId)
         return user.assets.map { asset -> AssetDto.fromEntity(asset) }

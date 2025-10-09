@@ -6,12 +6,14 @@ import com.sanya.mg.sanyademo.repository.TransactionRepository
 import com.sanya.mg.sanyademo.repository.entity.Transaction
 import com.sanya.mg.sanyademo.repository.entity.User
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 
 @Service
 class TransactionService(
     private val transactionRepository: TransactionRepository,
 ) {
+    @Transactional
     fun createTransaction(
         type: TransactionType,
         symbol: String,
