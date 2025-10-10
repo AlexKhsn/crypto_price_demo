@@ -4,7 +4,6 @@ import com.sanya.mg.sanyademo.api.asset.dto.AssetCreateRequest
 import com.sanya.mg.sanyademo.api.asset.dto.AssetDto
 import com.sanya.mg.sanyademo.api.asset.dto.AssetPriceDto
 import com.sanya.mg.sanyademo.api.asset.dto.AssetUpdateRequest
-import com.sanya.mg.sanyademo.api.asset.dto.AssetsTotalPriceDto
 import com.sanya.mg.sanyademo.service.AssetService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/api/assets")
@@ -107,9 +105,9 @@ class AssetController(
     @GetMapping("/price/{id}")
     fun getAssetPrice(
         @PathVariable id: Long,
-    ) : ResponseEntity<AssetPriceDto> {
+    ): ResponseEntity<AssetPriceDto> {
         try {
-            val priceResponse = assetService.getAssetPrice(id)
+            val priceResponse = assetService.getAssetPrice(id).toDto()
             return ResponseEntity.ok().body(priceResponse)
         } catch (e: Exception) {
             return ResponseEntity.notFound().build()
@@ -120,7 +118,7 @@ class AssetController(
     @GetMapping("/price/userId/{userId}")
     fun getUserTotalAssetsPrice(
         @PathVariable userId: Long,
-    ) : ResponseEntity<AssetsTotalPriceDto> {
+    ): ResponseEntity<List<AssetPriceDto>> {
         try {
             val totalPrice = assetService.getUsersAssetsTotalPrice(userId)
             return ResponseEntity.ok().body(totalPrice)

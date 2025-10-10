@@ -16,4 +16,14 @@ data class AssetPriceDto(
     val currentPrice: BigDecimal,
     @field:Schema(description = "Asset total price", example = "433.34221")
     val totalPrice: BigDecimal = quantity * currentPrice,
-)
+){
+    companion object {
+        fun AssetPriceModel.toDto() = AssetPriceDto(
+            id = this.id,
+            baseTicker = this.baseTicker,
+            quoteTicker = this.quoteTicker,
+            quantity = this.quantity,
+            currentPrice = this.currentPrice,
+        )
+    }
+}

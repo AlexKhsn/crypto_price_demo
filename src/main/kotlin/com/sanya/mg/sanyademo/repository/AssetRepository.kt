@@ -10,6 +10,8 @@ interface AssetRepository : JpaRepository<Asset, Long> {
     fun findByBaseTickerAndQuoteTicker(baseTicker: String, quoteTicker: String): Asset?
 
     fun findByUserAndBaseTickerAndQuoteTicker(user: User, baseTicker: String, quoteTicker: String): Asset?
-    fun getAllByUser_Id(userId: Long): MutableList<Asset>
-    fun getAssetsByUser_Id(userId: Long): MutableList<Asset>
+
+    fun getAllByUserId(userId: Long): MutableList<Asset>
+
+    fun getAssetsByUserId(userId: Long): MutableList<Asset>
 }

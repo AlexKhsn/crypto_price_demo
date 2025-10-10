@@ -2,7 +2,6 @@ package com.sanya.mg.sanyademo.service
 
 import com.sanya.mg.sanyademo.api.asset.dto.AssetDto
 import com.sanya.mg.sanyademo.api.asset.dto.AssetPriceDto
-import com.sanya.mg.sanyademo.api.asset.dto.AssetsTotalPriceDto
 import com.sanya.mg.sanyademo.common.TransactionType
 import com.sanya.mg.sanyademo.repository.AssetRepository
 import com.sanya.mg.sanyademo.repository.entity.Asset
@@ -25,7 +24,7 @@ class AssetService(
         quoteTicker: String,
         quantity: BigDecimal,
         user: Long,
-    ): AssetDto {
+    ): AssetModel {
         val user = userService.getUserEntityById(user)
 
         val existingAsset = assetRepository.findByUserAndBaseTickerAndQuoteTicker(user, baseTicker, quoteTicker)
@@ -51,18 +50,18 @@ class AssetService(
         return AssetDto fromEntity saved
     }
 
-    fun getAssetById(id: Long): AssetDto {
+    fun getAssetById(id: Long): AssetModel {
         val found = assetRepository.findById(id).get()
         return AssetDto fromEntity found
     }
 
-    fun getAllAssets(): List<AssetDto> {
+    fun getAllAssets(): List<AssetModel> {
         val found = assetRepository.findAll()
         return found.map { asset -> AssetDto fromEntity asset }
     }
 
     @Transactional
-    fun updateAsset(id: Long, quantity: BigDecimal): AssetDto {
+    fun updateAsset(id: Long, quantity: BigDecimal): AssetModel {
         val found = assetRepository.findById(id).get()
         val updated = Asset(
             found.id!!,
@@ -94,7 +93,7 @@ class AssetService(
     }
 
     @Transactional
-    fun deleteAsset(id: Long): AssetDto {
+    fun deleteAsset(id: Long): AssetModel {
         val forDelete = assetRepository.findById(id).get()
 
         transactionService.createTransaction(
@@ -110,38 +109,33 @@ class AssetService(
     }
 
     @Transactional(readOnly = true)
-    fun getUsersAssets(userId: Long): List<AssetDto> {
+    fun getUsersAssets(userId: Long): List<AssetModel> {
         val user = userService.getUserEntityById(userId)
         return user.assets.map { asset -> AssetDto.fromEntity(asset) }
     }
 
-    fun getAssetPrice(assetId: Long): AssetPriceDto {
+    fun getAssetPrice(assetId: Long): AssetPriceModel {
         try {
-            val asset = assetRepository.findById(assetId).get()
+            val asset = assetRepository.findById(assetId).get().toModel()
             val currentPrice = binanceService.getPrice(asset.baseTicker, asset.quoteTicker)
-            return AssetPriceDto(
+            return AssetModel(
                 asset.id!!,
                 asset.baseTicker,
                 asset.quoteTicker,
                 asset.quantity,
-                currentPrice!!.price
+                currentPrice!!.price,
             )
         } catch (e: Exception) {
             throw e
         }
     }
 
-    fun getUsersAssetsTotalPrice(userId: Long): AssetsTotalPriceDto {
+    fun getUsersAssetsTotalPrice(userId: Long): List<AssetPriceModel> {
         try {
-            val userAssetsPricesDtos = assetRepository.getAssetsByUser_Id(userId)
+            val userAssetsPricesDtos = assetRepository.getAssetsByUserId(userId)
                 .map { asset -> getAssetPrice(asset.id!!) }
-            val totalPrice = userAssetsPricesDtos.sumOf { it.totalPrice }
 
-            return AssetsTotalPriceDto(
-                userId,
-                totalPrice,
-                userAssetsPricesDtos
-            )
+            return userAssetsPricesDtos
         } catch (e: Exception) {
             throw e
         }
