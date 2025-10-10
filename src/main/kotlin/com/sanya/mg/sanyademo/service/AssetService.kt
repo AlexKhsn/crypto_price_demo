@@ -1,6 +1,8 @@
 package com.sanya.mg.sanyademo.service
 
 import com.sanya.mg.sanyademo.api.asset.dto.AssetDto
+import com.sanya.mg.sanyademo.api.asset.dto.AssetPriceDto
+import com.sanya.mg.sanyademo.api.asset.dto.AssetsTotalPriceDto
 import com.sanya.mg.sanyademo.common.TransactionType
 import com.sanya.mg.sanyademo.repository.AssetRepository
 import com.sanya.mg.sanyademo.repository.entity.Asset
@@ -13,8 +15,9 @@ import java.math.BigDecimal
 @Service
 class AssetService(
     private val assetRepository: AssetRepository,
-    val transactionService: TransactionService,
+    private val transactionService: TransactionService,
     private val userService: UserService,
+    private val binanceService: BinanceService,
 ) {
     @Transactional
     fun createAsset(
@@ -110,5 +113,37 @@ class AssetService(
     fun getUsersAssets(userId: Long): List<AssetDto> {
         val user = userService.getUserEntityById(userId)
         return user.assets.map { asset -> AssetDto.fromEntity(asset) }
+    }
+
+    fun getAssetPrice(assetId: Long): AssetPriceDto {
+        try {
+            val asset = assetRepository.findById(assetId).get()
+            val currentPrice = binanceService.getPrice(asset.baseTicker, asset.quoteTicker)
+            return AssetPriceDto(
+                asset.id!!,
+                asset.baseTicker,
+                asset.quoteTicker,
+                asset.quantity,
+                currentPrice!!.price
+            )
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    fun getUsersAssetsTotalPrice(userId: Long): AssetsTotalPriceDto {
+        try {
+            val userAssetsPricesDtos = assetRepository.getAssetsByUser_Id(userId)
+                .map { asset -> getAssetPrice(asset.id!!) }
+            val totalPrice = userAssetsPricesDtos.sumOf { it.totalPrice }
+
+            return AssetsTotalPriceDto(
+                userId,
+                totalPrice,
+                userAssetsPricesDtos
+            )
+        } catch (e: Exception) {
+            throw e
+        }
     }
 }
