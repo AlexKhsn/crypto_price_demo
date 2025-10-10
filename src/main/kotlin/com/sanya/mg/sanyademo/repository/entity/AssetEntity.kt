@@ -12,7 +12,7 @@ import java.math.BigDecimal
 
 @Entity
 @Table(name = "assets")
-data class Asset(
+data class AssetEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
@@ -24,5 +24,5 @@ data class Asset(
     val quantity: BigDecimal,
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    val user: User,
+    val user: UserEntity,
 )

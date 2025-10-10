@@ -1,6 +1,7 @@
 package com.sanya.mg.sanyademo.api.user.dto
 
-import com.sanya.mg.sanyademo.repository.entity.User
+import com.sanya.mg.sanyademo.repository.entity.UserEntity
+import com.sanya.mg.sanyademo.service.model.UserModel
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDateTime
 
@@ -15,11 +16,11 @@ data class UserDto(
     val createdAt: LocalDateTime,
 ) {
     companion object {
-        infix fun fromEntity(user: User): UserDto = UserDto(
-            user.id!!,
-            user.username,
-            user.email,
-            user.createdAt,
+        fun UserModel.toDto() = UserDto(
+            id = this.id,
+            username = this.username,
+            email = this.email,
+            createdAt = this.createdAt,
         )
     }
 }

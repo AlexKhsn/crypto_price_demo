@@ -1,7 +1,7 @@
 package com.sanya.mg.sanyademo.api.transaction.dto
 
 import com.sanya.mg.sanyademo.common.TransactionType
-import com.sanya.mg.sanyademo.repository.entity.Transaction
+import com.sanya.mg.sanyademo.repository.entity.TransactionEntity
 import io.swagger.v3.oas.annotations.media.Schema
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -24,7 +24,7 @@ data class TransactionDto(
     val userId: Long,
 ) {
     companion object {
-        infix fun fromEntity(entity: Transaction): TransactionDto {
+        infix fun fromEntity(entity: TransactionEntity): TransactionDto {
             return TransactionDto(
                 entity.id!!,
                 entity.type,

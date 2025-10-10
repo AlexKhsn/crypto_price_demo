@@ -2,7 +2,10 @@ package com.sanya.mg.sanyademo.common
 
 import com.sanya.mg.sanyademo.api.asset.dto.AssetCreateRequest
 import com.sanya.mg.sanyademo.api.asset.dto.AssetDto
-import com.sanya.mg.sanyademo.repository.entity.User
+import com.sanya.mg.sanyademo.repository.AssetRepository
+import com.sanya.mg.sanyademo.repository.UserRepository
+import com.sanya.mg.sanyademo.repository.entity.AssetEntity
+import com.sanya.mg.sanyademo.repository.entity.UserEntity
 import io.kotest.matchers.comparables.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -23,13 +26,13 @@ object TestUtil {
         this.id shouldBeGreaterThan 0
     }
 
-    fun createDefaultUser(
+    fun UserRepository.createDefaultUser(
         id: Long? = null,
         username: String = "Test User",
         email: String = "jonh.doe@example.com",
         createdAt: LocalDateTime = now(),
-    ): User {
-        return User(
+    ): UserEntity {
+        return UserEntity(
             id = id,
             username = username,
             email = email,
@@ -48,6 +51,22 @@ object TestUtil {
             quoteTicker = quoteTicker,
             quantity = BigDecimal(quantity),
             userId = userId,
+        )
+    }
+
+    fun AssetRepository.createDefaultAsset(
+        id: Long? = null,
+        baseTicker: String = "BTC",
+        quoteTicker: String = "USDT",
+        quantity: Double = 1.5,
+        user: UserEntity,
+    ): AssetEntity {
+        return AssetEntity(
+            id = id,
+            baseTicker = baseTicker,
+            quoteTicker = quoteTicker,
+            quantity = BigDecimal(quantity),
+            user = user,
         )
     }
 }

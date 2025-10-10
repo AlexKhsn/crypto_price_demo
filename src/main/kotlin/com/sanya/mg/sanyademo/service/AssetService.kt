@@ -1,15 +1,16 @@
 package com.sanya.mg.sanyademo.service
 
 import com.sanya.mg.sanyademo.api.asset.dto.AssetDto
-import com.sanya.mg.sanyademo.api.asset.dto.AssetPriceDto
 import com.sanya.mg.sanyademo.common.TransactionType
 import com.sanya.mg.sanyademo.repository.AssetRepository
-import com.sanya.mg.sanyademo.repository.entity.Asset
+import com.sanya.mg.sanyademo.repository.entity.AssetEntity
+import com.sanya.mg.sanyademo.service.model.AssetModel
+import com.sanya.mg.sanyademo.service.model.AssetModel.Companion.toModel
+import java.math.BigDecimal
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
-import java.math.BigDecimal
 
 @Service
 class AssetService(
@@ -23,15 +24,15 @@ class AssetService(
         baseTicker: String,
         quoteTicker: String,
         quantity: BigDecimal,
-        user: Long,
+        userId: Long,
     ): AssetModel {
-        val user = userService.getUserEntityById(user)
+        val user = userService.getUserEntityById(userId)
 
-        val existingAsset = assetRepository.findByUserAndBaseTickerAndQuoteTicker(user, baseTicker, quoteTicker)
+        val existingAsset = assetRepository.findByUserIdAndBaseTickerAndQuoteTicker(user.id!!, baseTicker, quoteTicker)
 
         if (existingAsset != null) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Asset already exists")
 
-        val forSave = Asset(
+        val forSave = AssetEntity(
             id = null,
             baseTicker = baseTicker,
             quoteTicker = quoteTicker,
@@ -47,7 +48,7 @@ class AssetService(
             user = saved.user,
         )
 
-        return AssetDto fromEntity saved
+        return saved.toModel()
     }
 
     fun getAssetById(id: Long): AssetModel {
@@ -63,7 +64,7 @@ class AssetService(
     @Transactional
     fun updateAsset(id: Long, quantity: BigDecimal): AssetModel {
         val found = assetRepository.findById(id).get()
-        val updated = Asset(
+        val updated = AssetEntity(
             found.id!!,
             found.baseTicker,
             found.quoteTicker,

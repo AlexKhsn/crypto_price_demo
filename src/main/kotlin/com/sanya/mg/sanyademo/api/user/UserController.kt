@@ -2,6 +2,7 @@ package com.sanya.mg.sanyademo.api.user
 
 import com.sanya.mg.sanyademo.api.user.dto.CreateUserDto
 import com.sanya.mg.sanyademo.api.user.dto.UserDto
+import com.sanya.mg.sanyademo.api.user.dto.UserDto.Companion.toDto
 import com.sanya.mg.sanyademo.service.UserService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -25,14 +26,17 @@ class UserController(
     fun addUser(
         @RequestBody user: CreateUserDto,
     ): ResponseEntity<UserDto> {
-        val user = userService.createUser(user)
-        return ResponseEntity.ok().body(user)
+        val user = userService.createUser(
+            username = user.username,
+            email = user.email,
+        )
+        return ResponseEntity.ok().body(user.toDto())
     }
 
     @Operation(summary = "Get all users", description = "Returns a list of all users")
     @GetMapping
     fun getUsers(): ResponseEntity<List<UserDto>> {
-        val users = userService.getAllUsers()
+        val users = userService.getAllUsers().map { it.toDto() }
         return ResponseEntity.ok().body(users)
     }
 
@@ -42,8 +46,8 @@ class UserController(
         @PathVariable id: Long,
     ): ResponseEntity<UserDto> {
         try {
-            val userById = userService.getUserById(id)
-            return ResponseEntity.ok().body(userById)
+            val user = userService.getUserById(id)
+            return ResponseEntity.ok().body(user.toDto())
         } catch (e: NoSuchElementException) {
             return ResponseEntity.notFound().build()
         }
@@ -56,7 +60,7 @@ class UserController(
     ): ResponseEntity<UserDto> {
         try {
             val user = userService.getUserByUsername(username)
-            return ResponseEntity.ok().body(user)
+            return ResponseEntity.ok().body(user.toDto())
         } catch (e: NoSuchElementException) {
             return ResponseEntity.notFound().build()
         }
@@ -69,7 +73,7 @@ class UserController(
     ): ResponseEntity<UserDto> {
         try {
             val user = userService.getUserByEmail(email)
-            return ResponseEntity.ok().body(user)
+            return ResponseEntity.ok().body(user.toDto())
         } catch (e: NoSuchElementException) {
             return ResponseEntity.notFound().build()
         }
@@ -82,7 +86,7 @@ class UserController(
     ): ResponseEntity<UserDto> {
         try {
             val deletedUser = userService.deleteUserById(id)
-            return ResponseEntity.ok().body(deletedUser)
+            return ResponseEntity.ok().body(deletedUser.toDto())
         } catch (e: NoSuchElementException) {
             return ResponseEntity.notFound().build()
         }

@@ -1,6 +1,6 @@
 package com.sanya.mg.sanyademo.api.asset.dto
 
-import com.sanya.mg.sanyademo.repository.entity.Asset
+import com.sanya.mg.sanyademo.repository.entity.AssetEntity
 import io.swagger.v3.oas.annotations.media.Schema
 import java.math.BigDecimal
 
@@ -17,7 +17,7 @@ data class AssetDto(
     val userId: Long,
 ) {
     companion object {
-        infix fun fromEntity(entity: Asset) = AssetDto(
+        infix fun fromEntity(entity: AssetEntity) = AssetDto(
             id = entity.id!!,
             baseTicker = entity.baseTicker,
             quoteTicker = entity.quoteTicker,

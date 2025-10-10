@@ -35,7 +35,7 @@ class AssetController(
             baseTicker = request.baseTicker,
             quoteTicker = request.quoteTicker,
             quantity = request.quantity,
-            user = request.userId,
+            userId = request.userId,
         )
         return ResponseEntity.status(201).body(new)
     }

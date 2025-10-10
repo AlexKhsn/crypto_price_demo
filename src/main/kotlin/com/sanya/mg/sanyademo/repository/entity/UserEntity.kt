@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "users")
-data class User(
+data class UserEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
@@ -23,7 +23,7 @@ data class User(
     @Column(nullable = false)
     val createdAt: LocalDateTime,
     @OneToMany(mappedBy = "user", cascade = [(CascadeType.ALL)])
-    val assets: MutableList<Asset> = mutableListOf(),
+    val assets: MutableList<AssetEntity> = mutableListOf(),
     @OneToMany(mappedBy = "user", cascade = [(CascadeType.ALL)])
-    val transactions: MutableList<Transaction> = mutableListOf(),
+    val transactions: MutableList<TransactionEntity> = mutableListOf(),
 )

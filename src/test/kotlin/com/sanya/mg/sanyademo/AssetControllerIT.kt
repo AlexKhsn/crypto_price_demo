@@ -84,6 +84,7 @@ class AssetControllerIT(
         beforeEach {
             assetRepository.deleteAll()
             userRepository.deleteAll()
+            transactionRepository.deleteAll()
         }
 
         test("EXAMPLE PLAN successfully create asset for existing user") {
@@ -103,7 +104,7 @@ class AssetControllerIT(
 
         test("Successfully create asset for existing user") {
             // Arrange
-            val user = userRepository.save(createDefaultUser())
+            val user = userRepository.createDefaultUser()
             val request = createDefaultAssetRequest(userId = user.id!!)
 
             // Act
@@ -125,7 +126,7 @@ class AssetControllerIT(
             // создать юзера + заасейвать его
             // подготовить данные для создания ассетов (создать сущности реквестов)
 
-            val user = userRepository.save(createDefaultUser())
+            val user = userRepository.createDefaultUser()
             val request1 = createDefaultAssetRequest(userId = user.id!!)
             val request2 = createDefaultAssetRequest(quantity = 2.0, userId = user.id!!)
 
@@ -184,7 +185,7 @@ class AssetControllerIT(
 
         test("Should return 200 when creating 2 assets with  same base ticker but different quote ticker for the same user") {
             // Arrange
-            val user = userRepository.save(createDefaultUser())
+            val user = userRepository.createDefaultUser()
             val request1 = createDefaultAssetRequest(userId = user.id!!)
             val request2 = createDefaultAssetRequest(quoteTicker = "ETH", quantity = 2.0, userId = user.id!!)
 
@@ -204,7 +205,7 @@ class AssetControllerIT(
 
         test("Should return 200 when creating 2 assets with  different base ticker but same quote ticker for the same user") {
             // Arrange
-            val user = userRepository.save(createDefaultUser())
+            val user = userRepository.createDefaultUser()
             val request1 = createDefaultAssetRequest(userId = user.id!!)
             val request2 = createDefaultAssetRequest(baseTicker = "ETH", quantity = 2.0, userId = user.id!!)
 
@@ -221,7 +222,7 @@ class AssetControllerIT(
 
         test("Should successfully get asset by existing ID") {
             // Arrange
-            val user = userRepository.save(createDefaultUser())
+            val user = userRepository.createDefaultUser()
             val request = createDefaultAssetRequest(userId = user.id!!)
             val response = assetController.create(request)
 
@@ -250,7 +251,7 @@ class AssetControllerIT(
 
         test("Successfully get all assets when multiple assets exist") {
             //  Arrange
-            val user = userRepository.save(createDefaultUser())
+            val user = userRepository.createDefaultUser()
             val request1 = createDefaultAssetRequest(userId = user.id!!)
             val request2 = createDefaultAssetRequest(baseTicker = "ETH", userId = user.id!!)
             val response1 = assetController.create(request1)
@@ -282,7 +283,7 @@ class AssetControllerIT(
 
         test("Successfully get all assets when 1 asset exist return list with 1 asset") {
             //  Arrange
-            val user = userRepository.save(createDefaultUser())
+            val user = userRepository.createDefaultUser()
             val request = createDefaultAssetRequest(userId = user.id!!)
             val response = assetController.create(request)
             val allAssetsResponse = assetController.getAll()
@@ -299,7 +300,7 @@ class AssetControllerIT(
 
         test("Successfully get all assets for existing user with multiple assets") {
             //  Arrange
-            val user = userRepository.save(createDefaultUser())
+            val user = userRepository.createDefaultUser()
             val request1 = createDefaultAssetRequest(userId = user.id!!)
             val request2 = createDefaultAssetRequest("ETH", userId = user.id!!)
             val response1 = assetController.create(request1)
@@ -322,7 +323,7 @@ class AssetControllerIT(
 
         test("Get assets for existing user with no assets - should return empty list") {
             //  Arrange
-            val user = userRepository.save(createDefaultUser())
+            val user = userRepository.createDefaultUser()
             val allUserAssetsResponse = assetController.getUserAssetsById(user.id!!)
 
             //  Act
@@ -346,7 +347,7 @@ class AssetControllerIT(
 
         test("Successfully update asset quantity for existing asset") {
             //  Arrange
-            val user = userRepository.save(createDefaultUser())
+            val user = userRepository.createDefaultUser()
             val request = createDefaultAssetRequest(userId = user.id!!)
             val response = assetController.create(request)
 
@@ -376,7 +377,7 @@ class AssetControllerIT(
 
         test("Successfully delete existing asset and verify it's removed from DB") {
             //  Arrange
-            val user = userRepository.save(createDefaultUser())
+            val user = userRepository.createDefaultUser()
             val request = createDefaultAssetRequest(userId = user.id!!)
             val response = assetController.create(request)
 
@@ -404,7 +405,7 @@ class AssetControllerIT(
 
         test("Create asset with very large quantity (BigDecimal precision)") {
             //  Arrange
-            val user = userRepository.save(createDefaultUser())
+            val user = userRepository.createDefaultUser()
             val request = createDefaultAssetRequest(quantity = 1.23E+1, userId = user.id!!)
 
             //  Act
@@ -417,7 +418,7 @@ class AssetControllerIT(
 
         test("Verify asset-user relationship is maintained correctly (when deleted user - assets deleted too)") {
             //  Arrange
-            val user = userRepository.save(createDefaultUser())
+            val user = userRepository.createDefaultUser()
             val request = createDefaultAssetRequest(userId = user.id!!)
             val response = assetController.create(request)
 
@@ -437,7 +438,7 @@ class AssetControllerIT(
 
         test("Verify user not deleted when asset deleted") {
             //  Arrange
-            val user = userRepository.save(createDefaultUser())
+            val user = userRepository.createDefaultUser()
             val request = createDefaultAssetRequest(userId = user.id!!)
             val response = assetController.create(request)
 
@@ -457,7 +458,7 @@ class AssetControllerIT(
 
         test("LATER Verify transactions are created when assets are modified (if applicable)") {
             //  Arrange
-            val user = userRepository.save(createDefaultUser())
+            val user = userRepository.createDefaultUser()
             val assetCreateRequest = createDefaultAssetRequest(userId = user.id!!)
             val assetId = assetController.create(assetCreateRequest).body!!.id
             transactionRepository.findAll().size shouldBe 1

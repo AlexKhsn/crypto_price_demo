@@ -16,7 +16,7 @@ import java.time.LocalDate
 
 @Entity
 @Table(name = "transactions")
-data class Transaction(
+data class TransactionEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
@@ -31,5 +31,5 @@ data class Transaction(
     val date: LocalDate = LocalDate.now(),
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    val user: User,
+    val user: UserEntity,
 )
